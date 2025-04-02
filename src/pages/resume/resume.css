@@ -1,0 +1,30 @@
+.date-container {
+    position: relative;
+    display: inline-block;
+}
+
+.date-placeholder {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: gray;
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+.date-input {
+    padding: 10px;
+    width: 100%;
+}
+
+.date-input:focus + .date-placeholder,
+.date-input:valid + .date-placeholder {
+    top: 5px;
+    font-size: 12px;
+    color: #666;
+}
+.resume-container {
+    background-color: white !important;
+}
+
