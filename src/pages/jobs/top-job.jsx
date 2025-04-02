@@ -25,7 +25,7 @@ const TopJob = ({companyName,city,title,description,scheduleType,deadline}) => {
             <div className='flex justify-between'>
                 <div className='flex'>
                     <WorkOutlineOutlinedIcon sx={{ color: '#9CA3AF' }}/>
-                    <p className='font-normal text-gray-400' >{scheduleType}</p>
+                    <p className='font-normal text-gray-500' >{scheduleType}</p>
                 </div>
                 <div className='flex'>
                     <AccessTimeOutlinedIcon sx={{ color: '#9CA3AF' }}/>
