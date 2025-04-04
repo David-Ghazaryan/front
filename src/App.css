@@ -1,14 +1,16 @@
 @import "tailwindcss";
 :root {
     --primary: #0f687e;
-    --light:#DCE6F6;
-    --itemColor:#EDF1F9;
+    /* --light:#DCE6F6; */
+    --light:#EDF1F9;
+    /* --itemColor:#EDF1F9; */
+    --itemColor:#fff;
     
   }
 body{
-  background-color:#DCE6F6;
-  font-family: 'Montserrat', sans-serif;
-
+  background-color:#EDF1F9;
+  /* font-family: 'Montserrat', sans-serif; */
+  font-family: 'Muli', sans-serif;
 }
 .container{
   margin: 0 auto;

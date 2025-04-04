@@ -6,6 +6,8 @@ import ResumeBuilder from "./pages/resume/resume";
 import ScrollToTop from "./components/scroll-top/scroll-top";
 import AboutUs from "./pages/about-us/about";
 import Jobs from "./pages/jobs/jobs";
+import Companies from "./pages/companies/companies";
+import Workers from "./pages/workers/workers";
 import './App.css'
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
             <Route path="/resume-builder" element={<ResumeBuilder />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/jobs" element={<Jobs />} />
+            <Route path="/companies" element={<Companies />} />
+            <Route path="/workers" element={<Workers />} />
             <Route path="*" element={<Notfound />} />
           </Route>
         </Routes>
