@@ -10,6 +10,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DownloadIcon from '@mui/icons-material/Download';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import DeleteIcon from '@mui/icons-material/Delete';
+import OnTop from "../../components/onTop/onTop";
 
 import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -103,6 +104,8 @@ const ResumeBuilder = () => {
   };
   
   return (
+    <>
+    <OnTop/>
     <div className="py-[50px]">
       <div className="container">
         <div className="text-[var(--primary)] text-3xl text-center font-semibold mb-10">
@@ -386,6 +389,7 @@ const ResumeBuilder = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

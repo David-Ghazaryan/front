@@ -3,7 +3,7 @@ import { useEffect,useState } from 'react';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import Worker from './worker';
-const Workers = ({companyCount=5}) => {
+const Workers = ({companyCount=6}) => {
     const [placeholder, setPlaceholder] = useState("");
     
     useEffect(() => {
@@ -36,12 +36,12 @@ const Workers = ({companyCount=5}) => {
                         </p>
                     </div>
                     <input 
-                            type="text" 
-                            className="w-[420px] h-[60px] rounded-[8px] px-4 border border-gray-300  mt-5
-                                        focus:outline-none focus:ring-1 focus:ring-[var(--primary)] focus:white
-                                        focus:backdrop-white transition duration-300 input-animate" 
-                            placeholder={placeholder}
-                            />
+                      type="text" 
+                      className="w-[420px] h-[60px] rounded-[8px] px-4 border border-gray-300  mt-5
+                                  focus:outline-none focus:ring-1 focus:ring-[var(--primary)] focus:white
+                                  focus:backdrop-white transition duration-300 input-animate" 
+                      placeholder={placeholder}
+                    />
                 </div>
             </div>
             <div className="flex flex-col gap-5 ">
@@ -50,7 +50,6 @@ const Workers = ({companyCount=5}) => {
                         Գտնվել է` {companyCount} Աշխատակից
                     </p>
                 </div>
-                
                 <Worker avatar={"src/assets/images/user-image.png"} fullName={'Davit Ghazaryan'} city={'Երևան'} industry={"Developer"} salary={"100.000 Դրամ"} scheduleType={"Կես դրույք"}/>
                 <Worker avatar={"src/assets/images/user-image.png"} fullName={'Davit Ghazaryan'} city={'Երևան'} industry={"Developer"} salary={"100.000 Դրամ"} scheduleType={"Կես դրույք"}/>
                 <Worker avatar={"src/assets/images/user-image.png"} fullName={'Davit Ghazaryan'} city={'Երևան'} industry={"Developer"} salary={"100.000 Դրամ"} scheduleType={"Կես դրույք"}/>
@@ -76,7 +75,7 @@ const Workers = ({companyCount=5}) => {
                                   }}
                                 }
                             />
-                        </Stack>
+                  </Stack>
             </div>
         </div>
     </div>
