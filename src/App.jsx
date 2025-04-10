@@ -9,6 +9,7 @@ import Jobs from "./pages/jobs/jobs";
 import Companies from "./pages/companies/companies";
 import Workers from "./pages/workers/workers";
 import CompanyPage from "./components/company-page/company-page";
+import JobPage from "./components/job-page/job-page";
 import './App.css'
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
             <Route path="/companies" element={<Companies />} />
             <Route path="/workers" element={<Workers />} />
             <Route path="/companyPage" element={<CompanyPage />} />
+            <Route path="/jobPage" element={<JobPage />} />
             <Route path="*" element={<Notfound />} />
           </Route>
         </Routes>
