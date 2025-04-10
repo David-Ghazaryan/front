@@ -48,7 +48,7 @@ const Jobs = () => {
                     <div className="w-[700px]">
                         <p className="font-bold font-inter text-[32px] text-[var(--primary)] ">Թափուր աշխատատեղեր</p>
                         <p className="font-extralight font-inter text-[14px] text-gray-500 2 pb-[15px]">Աշխատանքային հայտարարություններ</p>
-                        <div className="flex justify-evenly items-center w-full min-h-[80px] bg-[var(--itemColor)]  hover:shadow-[inset_0_0_0_2px_var(--primary)] rounded-[5px] shadow-lg">
+                        <div className="flex justify-evenly items-center w-full min-h-[80px] bg-[var(--itemColor)]  rounded-[5px] shadow-lg">
                             <input 
                                 type="text" 
                                 className="w-[450px] h-[50px] rounded-[8px] px-4 border border-gray-300  
