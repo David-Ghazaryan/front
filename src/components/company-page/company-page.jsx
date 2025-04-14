@@ -15,14 +15,14 @@ const CompanyPage = ({title,mail,logo,backgroundImage,phoneNumber,minWorkes,maxW
     description = 'Digitain is one of the leading IT companies in Armenia that creates optimal and user-friendly solutions for businesses, thus gracefully representing Armenia at various international expositions and platforms worldwide. With the rapidly growing number of employees and global partners, the company creates a positive work culture to inspire its employees to continuously write its success story by working together toward a common vision.'
     location = '15/3 Isakov Ave, Yerevan, RA'
     industry = 'Տեղեկատվական Տեխնոլոգիաներ, Ծրագրավորում'
-
+   
   return (
     <div className='containerPage '>
         <div className='flex flex-col shadow-lg'>
-            <div className='w-full h-[350px] shadow-2xl z-10 bg-[var(--itemColor)] border-1 border-gray-300'>
+            <div className='w-full h-[350px] shadow-2xl z-10 bg-[var(--itemColor)] border-x-1 border-b-1 border-gray-300'>
                 <img className='w-full h-full' src={backgroundImage} alt={backgroundImage} />
             </div>
-            <div className='w-full h-[125px] bg-[var(--itemColor)] border-1 border-gray-300 flex pl-[30px]'>
+            <div className='w-full h-[125px] bg-[var(--itemColor)] border-x-1 border-b-1 border-gray-300 flex pl-[30px]'>
                 <div className='w-[150px] h-[150px] transform translate-y-[-60px] z-20 bg-[var(--primary)]'>
                     <img className='w-full h-full' src={logo} alt={title || 'Անուն'} />
                 </div>
@@ -55,7 +55,7 @@ const CompanyPage = ({title,mail,logo,backgroundImage,phoneNumber,minWorkes,maxW
                         <Groups2Icon sx={{ fontSize: 28, color: '#d1d5dc'  }}/>
                         <div>
                             <p className='font-bold'>Աշխատակիցների քանակ</p>
-                            <p className='font-thin'>{minWorkes && maxWorkes ? `${minWorkes} - ${maxWorkes}` : 'Աշխատակիցների քանակը նշված չէ'}</p>
+                            <p className='font-thin'>{minWorkes && maxWorkes ? ( maxWorkes >= 1000 ? '1000+' :`${minWorkes} - ${maxWorkes}`) : 'Աշխատակիցների քանակը նշված չէ'}</p>
                         </div>
                     </div>
                     <div  className='flex items-center gap-2'>

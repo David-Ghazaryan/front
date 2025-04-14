@@ -77,7 +77,7 @@ const Jobs = () => {
                             <Job companyName='Digitain' city='Երևան' title='FrontEnd Ծրագրավորող'deadline='20.04.2025'/>
                             <Stack className='my-5 flex items-center justify-center'>
                                 <Pagination 
-                                    count={10} 
+                                    count={3} 
                                     variant="outlined" 
                                     shape="rounded" 
                                     sx={{

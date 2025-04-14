@@ -31,7 +31,7 @@ const AppMain=()=>{
                         <input 
                         type="text" 
                         className="w-[450px] h-[50px] rounded-[12px] px-4 border border-gray-300 bg-white 
-                                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-blue-50 
+                                    focus:outline-none focus:ring-2 focus:ring-[var(--light)]  
                                     focus:backdrop-blur-lg transition duration-300 input-animate" 
                         placeholder={placeholder}
                         />

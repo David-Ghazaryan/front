@@ -53,7 +53,7 @@ const ResumeBuilder = () => {
       ...prev,
       experiences: prev.experiences.map((exp, i) =>
               i === index
-                ? { position: "", company: "", startDate: "", endDate: "", description: "" } // Очищаем данные, но не удаляем блок
+                ? { position: "", company: "", startDate: "", endDate: "", description: "" } 
                 : exp
             ),
           }));

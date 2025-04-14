@@ -12,7 +12,7 @@ const OnTop = () => {
       const documentHeight = document.documentElement.scrollHeight;
 
       setShowButton(scrollTop > 200);
-      setIsNearBottom(scrollTop + windowHeight >= documentHeight - 200);
+      setIsNearBottom(scrollTop + windowHeight >= documentHeight - 210);
     };
 
     window.addEventListener('scroll', handleScroll);
