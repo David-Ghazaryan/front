@@ -11,7 +11,11 @@ const ListTitle =({title})=>{
     )
 }
 const ListLink =({text,href})=>{
-    return(<li className=" hover:no-underline relative after:content-[''] after:absolute after:left-1/2 after:bottom-[-4px] after:w-0 after:h-[1px] after:bg-white after:rounded-full after:transition-all after:duration-300 hover:after:left-0 hover:after:w-full  text-[14px] text-[var(--light)] pt-[15px]"><Link to={href}>{text}</Link></li>)
+    return(
+        <li className=" hover:no-underline relative after:content-[''] after:absolute after:left-1/2 after:bottom-[-4px] after:w-0 after:h-[1px] after:bg-white after:rounded-full after:transition-all after:duration-300 hover:after:left-0 hover:after:w-full  text-[14px] text-[var(--light)] pt-[15px]">
+            <Link to={href}>{text}</Link>
+        </li>
+    )
     
 }
 const AppFooter = ()=>{

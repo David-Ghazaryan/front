@@ -26,8 +26,8 @@ function App() {
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/companies" element={<Companies />} />
             <Route path="/workers" element={<Workers />} />
-            <Route path="/companyPage" element={<CompanyPage />} />
-            <Route path="/jobPage" element={<JobPage />} />
+            <Route path="/companies/:id" element={<CompanyPage />} />
+            <Route path="/job-page" element={<JobPage />} />
             <Route path="*" element={<Notfound />} />
           </Route>
         </Routes>

@@ -82,17 +82,17 @@ const Jobs = () => {
                                     shape="rounded" 
                                     sx={{
                                         '& .MuiPaginationItem-root': {
-                                        color: '#0f687e', 
-                                        borderColor: '#0f687e',
-                                        transition: 'all 0.1s ease', 
+                                          borderColor: '#0f687e !important',
+                                          color: '#0f687e !important',
+                                          transition: 'all 0.1s ease !important',
                                         },
                                         '& .Mui-selected': {
-                                        backgroundColor: '#0f687e', 
-                                        color: '#DCE6F6',
-                                        borderColor: '#0f687e',
-                                        transition: 'all 0.1s ease', 
-                                    }}
-                                    }
+                                          backgroundColor: '#0f687e !important',
+                                          color: '#DCE6F6 !important',
+                                          borderColor: '#0f687e !important',
+                                          transition: 'all 0.1s ease !important',
+                                        },
+                                      }}
                                 />
                             </Stack>
                         </div>
