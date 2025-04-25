@@ -8,15 +8,15 @@ const CompaniesItem = ({id,logo,companyName,city,industry,count}) => {
                 <img src={logo} alt={companyName} />
             </div>
             <div className='flex flex-col  justify-center gap-1'>
-                <Link to={`/companies/${id}`} className="font-bold ml-1">{companyName}</Link>
+                <Link to={`/companies/${id}`} className="font-bold ml-1 hover:underline">{companyName}</Link>
                 <p className='font-medium text-[var(--primary)] ml-1'>{industry}</p>
             </div>
         </div>
-        <div>
+        <div className="flex items-center justify-between w-[300px] h-[40px] ">
             <p className='font-normal text-gray-400'>{city}</p>
-        </div>
-        <div className="flex items-center justify-center bg-[var(--light)] mr-10 w-[150px] h-[40px] rounded-full text-[var(--primary)] text-sm font-medium hover:bg-[var(--primary)] hover:text-[var(--light)] transition duration-300">
-            {count} աշխատանք
+            <div className="flex items-center justify-center bg-[var(--light)] mr-10 w-[150px] h-[40px] rounded-full text-[var(--primary)] text-sm font-medium hover:bg-[var(--primary)] hover:text-[var(--light)] transition duration-300">
+                {count} աշխատանք
+            </div>
         </div>
     </div>
   )

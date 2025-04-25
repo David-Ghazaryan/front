@@ -16,6 +16,9 @@ const TopCompanies = ()=>{
             await new Promise(resolve => setTimeout(resolve, 1000)); 
       
             const response = await axios.get(`${config.BACK_URL}/api/company`);
+            
+            const sorted = response.data.data.sort((a, b) => (b.jobs?.length || 0) - (a.jobs?.length || 0));  
+            setCompanies(sorted);
             setCompanies(response.data.data); 
           } catch (err) {
             setError("Չհաջողվեց բեռնել ընկերությունները");
@@ -56,7 +59,7 @@ const TopCompanies = ()=>{
                         id={company.id}
                         logo={`${config.BACK_URL}${company.logo}`}
                         companyName={company.title} 
-                        location={company.location ? company.location: "Հասցեն նշված չէ"} 
+                        city={company.city ? company.city: null} 
                         count={company.jobs.length}
                     />
     

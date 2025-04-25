@@ -1,4 +1,5 @@
 import PricingText from './pricing-text';
+import { Link } from 'react-router-dom';
 // eslint-disable-next-line react/prop-types
 const PricingItem=({title,price,maxJobCount})=>{
     return(
@@ -13,9 +14,14 @@ const PricingItem=({title,price,maxJobCount})=>{
                     <PricingText text={"Access to Dashboard"}/>
                     <PricingText text={"Premium Support"}/> */}
                 </div>
-                <div className='flex items-center justify-center mt-[20px] bg-[var(--light)] w-[290px] h-[40px] font-inter font-medium text-[var(--primary)] text-sm rounded-lg hover:bg-[var(--primary)] hover:text-[#DFE8F7] transition duration-300'>
-                    <p>ԳՆԵԼ</p>
-                </div>
+                
+                <Link to={"/pay"}>
+                    <div className='flex items-center justify-center mt-[20px] bg-[var(--light)] w-[290px] h-[40px] font-inter font-medium text-[var(--primary)] text-sm rounded-lg hover:bg-[var(--primary)] hover:text-[#DFE8F7] transition duration-300'>
+                        <p>
+                            ԳՆԵԼ
+                        </p>
+                    </div>
+                </Link>
             </div>
         </div>
     )

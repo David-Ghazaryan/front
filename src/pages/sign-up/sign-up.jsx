@@ -1,0 +1,32 @@
+import { Link } from "react-router-dom";
+
+const RegisterPage = () => {
+    return (
+      <div className="min-h-157 flex items-center justify-center bg-[var(--light)] ">
+        <div className="bg-[var(--itemColor)] shadow-lg rounded-lg p-10 w-full max-w-md ">
+          <h1 className="text-2xl font-semibold text-gray-800 mb-6">Գրանցում</h1>
+          <div className="flex flex-col mt-10 items-center gap-4">
+            <Link to={"/sign-up/employer-reg"}>
+              <div className="text-[var(--itemColor)] w-90 bg-[var(--primary)] font-semibold py-3 rounded text-center">
+                Որպես գործատու
+              </div>
+            </Link>
+            <Link to={"/sign-up/for-candidat"}>
+              <div className="font-semibold w-90 text-[var(--primary)] border-[var(--primary)] py-3 rounded text-center border" >
+                Որպես թեքնացու
+              </div>
+            </Link>
+          </div>
+          <p className="text-center text-sm text-gray-600 mt-60">
+            Ունե՞ք օգտագործման հաշիվ։{" "}
+            <Link to={"/sign-in"} className="font-bold text-[var(--primary)] hover:underline">
+              Մուտք
+            </Link>
+          </p>
+        </div>
+      </div>
+    );
+  };
+  
+  export default RegisterPage;
+  
