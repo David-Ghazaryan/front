@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Alert } from "@mui/material"; 
 import CheckIcon from "@mui/icons-material/Check"; 
-
+import { useNavigate } from 'react-router-dom'; 
 const PayPage = () => {
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
@@ -10,7 +10,7 @@ const PayPage = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertType, setAlertType] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
-
+  const navigate = useNavigate(); 
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -51,6 +51,9 @@ const PayPage = () => {
     setShowAlert(true);
 
     console.log("Վճարելու փորձ:", { cardNumber, cardName, expDate, cvv });
+    setTimeout(() => {
+      navigate('/');  // Navigate to homepage after 3 seconds
+    }, 3000);
   };
 
   return (

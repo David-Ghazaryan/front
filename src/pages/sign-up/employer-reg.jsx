@@ -1,75 +1,106 @@
-import { TextField, Button } from "@mui/material";
+import { useState } from "react";
+import { TextField, Button, MenuItem } from "@mui/material";
+import { useAuth } from "../../context/useAuth";
 
-const EmployerRegistrationInputs = () => {
+const EmployerRegistration = () => {
+  const { register } = useAuth(); 
+
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    gender: "",
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await register(form); 
+  };
+
   const inputStyle = {
-    '& label.Mui-focused': {
-      color: 'var(--primary)',
-    },
+    '& label.Mui-focused': { color: 'var(--primary)' },
     '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: '#ccc',
-      },
-      '&:hover fieldset': {
-        borderColor: 'var(--primary)',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: 'var(--primary)',
-      },
+      '& fieldset': { borderColor: '#ccc' },
+      '&:hover fieldset': { borderColor: 'var(--primary)' },
+      '&.Mui-focused fieldset': { borderColor: 'var(--primary)' },
     },
   };
 
   return (
     <div className="min-h-157 flex items-center justify-center bg-[var(--light)]">
-      <div className="bg-[var(--itemColor)] shadow-lg rounded-lg p-10 w-full max-w-md">
-        <h1 className="text-2xl font-semibold text-[var(--primary)] mb-6 text-center">
-          Գրանցում որպես Գործատու
-        </h1>
+      <form onSubmit={handleSubmit}>
+        <div className="bg-[var(--itemColor)] shadow-lg rounded-lg p-10 w-full max-w-md">
+          <h1 className="text-2xl font-semibold text-[var(--primary)] mb-6 text-center">
+            Գրանցում որպես Գործատու
+          </h1>
 
-        <div className="flex flex-col gap-4">
-          <TextField
-            fullWidth
-            label="Անուն Ազգանուն"
-            variant="outlined"
-            sx={inputStyle}
-          />
-
-          <TextField
-            fullWidth
-            label="Էլ. փոստ"
-            variant="outlined"
-            type="email"
-            sx={inputStyle}
-          />
-
-          <TextField
-            fullWidth
-            label="Գաղտնաբառ"
-            variant="outlined"
-            type="password"
-            sx={inputStyle}
-          />
-
-          <div className="mt-4">
-            <Button
+          <div className="flex flex-col gap-4">
+            <TextField
               fullWidth
-              variant="contained"
-              sx={{
-                backgroundColor: 'var(--primary)',
-                '&:hover': {
-                  backgroundColor: 'var(--primaryDark)',
-                },
-                '&:active': {
-                  backgroundColor: 'var(--primaryDark)',
-                },
-              }}
+              label="Անուն Ազգանուն"
+              name="fullName"
+              value={form.fullName}
+              onChange={handleChange}
+              variant="outlined"
+              sx={inputStyle}
+            />
+            <TextField
+              fullWidth
+              label="Էլ. փոստ"
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              variant="outlined"
+              sx={inputStyle}
+            />
+            <TextField
+              fullWidth
+              label="Գաղտնաբառ"
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              variant="outlined"
+              sx={inputStyle}
+            />
+            <TextField
+              select
+              fullWidth
+              label="Սեռ"
+              name="gender"
+              value={form.gender}
+              onChange={handleChange}
+              variant="outlined"
+              sx={inputStyle}
             >
-              Գրանցվել
-            </Button>
+              <MenuItem value="male">Արական</MenuItem>
+              <MenuItem value="female">Իգական</MenuItem>
+            </TextField>
+
+            <div className="mt-4">
+              <Button
+                fullWidth
+                type="submit"
+                variant="contained"
+                sx={{
+                  backgroundColor: 'var(--primary)',
+                  '&:hover': { backgroundColor: 'var(--primaryDark)' },
+                  '&:active': { backgroundColor: 'var(--primaryDark)' },
+                }}
+              >
+                Գրանցվել
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
 
-export default EmployerRegistrationInputs;
+export default EmployerRegistration;

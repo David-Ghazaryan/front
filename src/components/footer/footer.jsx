@@ -30,7 +30,7 @@ const AppFooter = ()=>{
                                 <ListLink text={"Աշխատանքներ"} href="/jobs"/>
                                 <ListLink text={"Ընկերություններ"} href="/companies"/>
                                 <ListLink text={"Օնլայն ռեզյումե"} href="/resume-builder"/>
-                                <ListLink text={"Մեր մասին"} href="/about"/>
+                                {/* <ListLink text={"Մեր մասին"} href="/about"/> */}
                             </ul>
                         </div>
                         <div className="">

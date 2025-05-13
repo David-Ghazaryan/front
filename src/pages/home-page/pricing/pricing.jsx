@@ -1,9 +1,9 @@
 import PricingItem from './pricing-item.jsx';
 import Title from '../../../components/titles/titles.jsx';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import Skeleton from '@mui/material/Skeleton';
-import config from '../../../config/public.js';
+import GorcUxiService from '../../../services/gorcuxi_service.js';
+const service = new GorcUxiService();
 
 const PricingItems = () => {
   const [prices, setPrices] = useState([]);
@@ -14,11 +14,15 @@ const PricingItems = () => {
     const fetchPrices = async () => {
       try {
         await new Promise(resolve => setTimeout(resolve, 2000));
-        const response = await axios.get(`${config.BACK_URL}/api/pricing`);
-        setPrices(response.data);
-      } catch (err) {
-        setError("Չհաջողվեց բեռնել տվյալները");
-        console.error(err);
+        const pricingData = await service.getAllPricing();
+        if (pricingData && pricingData.length > 0) {
+          setPrices(pricingData);
+        } else {
+          setPrices([]);  
+        }
+      } catch (error) {
+        setError(error);
+        console.error("Error loading company:", error);
       } finally {
         setLoading(false);
       }
@@ -54,7 +58,7 @@ const PricingItems = () => {
     return (
       <div className="container">
         <Title text={"Արժեքները"} />
-        <p className="text-red-500 text-lg">{error}</p>
+        <p className="text-red-500 text-lg">{error.message}</p>
       </div>
     );
   }
@@ -63,14 +67,18 @@ const PricingItems = () => {
     <div className="container">
       <Title text={"Արժեքները"} />
       <div className="grid grid-cols-3 gap-[70px]">
-        {prices.slice(0, 6).map((pricing) => (
-          <PricingItem
-            key={pricing.id}
-            title={pricing.title}
-            price={`${pricing.price} AMD`}
-            maxJobCount={pricing.maxJobCount}
-          />
-        ))}
+        {prices.length > 0 ? (
+          prices.map((pricing) => (
+            <PricingItem
+              key={pricing.id}
+              title={pricing.title}
+              price={`${pricing.price} AMD`}
+              maxJobCount={pricing.maxJobCount}
+            />
+          ))
+        ) : (
+          <p className="text-gray-500">Արժեքները դեռ չեն բեռնվել կամ չկա նմանատիպ տվյալ</p>
+        )}
       </div>
     </div>
   );

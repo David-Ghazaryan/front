@@ -11,7 +11,7 @@ const RegisterPage = () => {
                 Որպես գործատու
               </div>
             </Link>
-            <Link to={"/sign-up/for-candidat"}>
+            <Link to={"/sign-up/candidat-reg"}>
               <div className="font-semibold w-90 text-[var(--primary)] border-[var(--primary)] py-3 rounded text-center border" >
                 Որպես թեքնացու
               </div>

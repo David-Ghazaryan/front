@@ -1,15 +1,15 @@
 /* eslint-disable react/prop-types */
 import { Link } from "react-router-dom"
-const CompaniesItem = ({id,logo,companyName,city,industry,count}) => {
+const CompaniesItem = ({id,logo,companyName,city,count}) => {
   return (
     <div className="w-[800px] h-[100px] bg-[var(--itemColor)] shadow-lg rounded-[8px] flex items-center justify-between">
         <div className='flex p-3'>
-            <div className='w-[80px] h-[80px] mr-2 flex items-center justify-center'>
+            <div className='w-[80px] border-1 border-gray-200 h-[80px] mr-2 flex items-center justify-center'>
                 <img src={logo} alt={companyName} />
             </div>
             <div className='flex flex-col  justify-center gap-1'>
                 <Link to={`/companies/${id}`} className="font-bold ml-1 hover:underline">{companyName}</Link>
-                <p className='font-medium text-[var(--primary)] ml-1'>{industry}</p>
+                {/* <p className='font-medium text-[var(--primary)] ml-1'>{industry}</p> */}
             </div>
         </div>
         <div className="flex items-center justify-between w-[300px] h-[40px] ">

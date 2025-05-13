@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import Title from "../../../components/titles/titles";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
-import StarRating from "./review-star";
 import ReviewCard from "./review-item";
 import Alert from "@mui/material/Alert";
 import CheckIcon from "@mui/icons-material/Check";
@@ -93,8 +92,8 @@ const AppReviews = ({ result }) => {
         <Title text={"Կարծիքներ"} />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
-            <p className={`font-bold text-[48px] ${colorClass}`}>{result}</p>
-            <StarRating value={`${result}`} />
+            <p className={`font-bold text-[48px] ${colorClass}`}>{result = 4}</p>
+            <Rating value={`${result}`} readOnly />
             <p className="text-black text-[16px]">Ավելի քան 50 կարծիք</p>
           </div>
 
@@ -177,13 +176,13 @@ const AppReviews = ({ result }) => {
         </Modal>
 
         <div className="grid grid-cols-4 gap-[50px] mt-[50px]">
-          <ReviewCard image={"src/assets/images/user-image.png"} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
+          <ReviewCard image={"src/assets/images/user-image.png"} rating={4} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
+          <ReviewCard image={"src/assets/images/user-image.png"} rating={3} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
+          <ReviewCard image={"src/assets/images/user-image.png"} rating={5} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
+          <ReviewCard image={"src/assets/images/user-image.png"} rating={5} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
+          <ReviewCard image={"src/assets/images/user-image.png"} rating={5} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
+          <ReviewCard image={"src/assets/images/user-image.png"} rating={5} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
+          <ReviewCard image={"src/assets/images/user-image.png"} rating={5} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
         </div>
       </div>
     </div>

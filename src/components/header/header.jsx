@@ -12,15 +12,15 @@ const AppHeader = () => {
     >
       <div className="container">
         <div className="flex justify-between">
-          <div className="flex gap-[20px]">
+          <div className="flex gap-[30px]">
             <Link to="/">
-            <AppLogo />
+              <AppLogo />
             </Link>
-            <ul className="flex align-center justify-center gap-[20px]">
+            <ul className="flex align-center justify-center gap-[30px]">
               <NavItem text="Աշխատանք" href="/jobs" />
-              <NavItem text="Ընկերություններ" href="/companies" />
+              <NavItem text="Ընկերություններ" href="/companies" activeStyle={{textDecoration: "underline"}}/>
               <NavItem text="Աշխատակիցներ" href="/workers" />
-              <NavItem text="Մեր մասին" href="/about" />
+              {/* <NavItem text="Մեր մասին" href="/about" /> */}
             </ul>
           </div>
           <div>
