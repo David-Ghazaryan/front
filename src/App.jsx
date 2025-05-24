@@ -14,8 +14,13 @@ import PayPage from "./pages/pay/pay";
 import RegisterPage from "./pages/sign-up/sign-up";
 import EmployerRegistration from "./pages/sign-up/employer-reg";
 import CandidatRegistration from "./pages/sign-up/candidat-reg";
-import { AuthProvider } from "./context/auth-context";
 import './App.css'
+import { SignInPage } from "./pages/sign-in/sign-in";
+import { AuthProvider } from "./providers/auth";
+import { VerifyEmailPage } from "./pages/verify-email/verfiy-email";
+import { SentEmailPage } from "./pages/sent-email/sent-email";
+import ProtectedRoute from "./components/protected-route";
+import { Dashboard } from "./dashboard/dashboard";
 
 function App() {
   
@@ -37,6 +42,13 @@ function App() {
             <Route path="/sign-up" element={<RegisterPage />} />
             <Route path="/sign-up/employer-reg" element={<EmployerRegistration />} />
             <Route path="/sign-up/candidat-reg" element={<CandidatRegistration />} />
+            <Route path="/sign-in" element={<SignInPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage/>} />
+            <Route path="/sent-email" element={<SentEmailPage/>} />
+
+            <Route path="" element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
             <Route path="*" element={<Notfound />} />
           </Route>
         </Routes>

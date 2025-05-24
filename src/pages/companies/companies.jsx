@@ -7,6 +7,16 @@ import CompaniesItem from './companies-item';
 import OnTop from '../../components/onTop/onTop';
 import GorcUxiService from '../../services/gorcuxi_service';
 import { Skeleton } from '@mui/material';
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Checkbox,
+  FormControlLabel,
+  Typography,
+  Box
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 const COMPANIES_PER_PAGE = 6;
 const service = new GorcUxiService();
 
@@ -16,10 +26,62 @@ const Companies = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [inputValue, setInputValue] = useState('');
   const [allCompanies, setAllCompanies] = useState([]);
+  const [hasJob, setHasJob] = useState(false);
 
+
+  
   const currentPage = parseInt(searchParams.get('page')) || 1;
   const searchQuery = searchParams.get('q') || '';
+  const cityArray = [
+  "Երևան",
+  "Գյումրի",
+  "Վանաձոր",
+  "Վաղարշապատ",
+  "Հրազդան",
+  "Աբովյան",
+  "Կապան",
+  "Չարենցավան",
+  "Գավառ",
+  "Արտաշատ",
+  "Մասիս",
+  "Սիսյան",
+  "Արմավիր",
+  "Սպիտակ",
+  "Սևան",
+  "Ալավերդի",
+  "Իջևան",
+  "Եղեգնաձոր",
+  "Բերդ",
+  "Դիլիջան",
+  "Այլ"
+];
+const [selectedCities, setSelectedCities] = useState([]);
 
+  const handleToggle = (city) => {
+  const isSame = selectedCities[0] === city;
+  const updated = isSame ? [] : [city];
+
+  const params = new URLSearchParams(searchParams);
+  if (updated.length > 0) {
+    params.set('city', city);
+  } else {
+    params.delete('city');
+  }
+  setSearchParams(params);
+
+  setSelectedCities(updated);
+};
+
+useEffect(() => {
+  const cityParam = searchParams.get('city');
+  if (cityParam) {
+    setSelectedCities(cityParam.split(','));
+  }
+}, [searchParams]);
+useEffect(() => {
+  const hasJobParam = searchParams.get('hasJob') === 'true';
+  setHasJob(hasJobParam);
+}, [searchParams]);
 
   useEffect(() => {
     setInputValue(searchQuery);
@@ -48,12 +110,39 @@ const Companies = () => {
     fetchAllCompanies();
   }, []);
 
-  const filteredCompanies = useMemo(() => {
-    if (!searchQuery) return allCompanies;
-    return allCompanies.filter(company =>
+ const filteredCompanies = useMemo(() => {
+  let result = allCompanies;
+if (searchParams.get('hasJob') === 'true') {
+  result = result.filter(company => company.hasJob === true);
+}
+
+  if (searchQuery) {
+    result = result.filter(company =>
       company.title?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [allCompanies, searchQuery]);
+  }
+
+  if (selectedCities.length > 0) {
+    result = result.filter(company =>
+      selectedCities.includes(company.city)
+    );
+  }
+
+  return result;
+}, [allCompanies, searchQuery, selectedCities]);
+
+const handleHasJobToggle = () => {
+  const newHasJob = !hasJob;
+  setHasJob(newHasJob);
+
+  const params = new URLSearchParams(searchParams);
+  if (newHasJob) {
+    params.set('hasJob', 'true');
+  } else {
+    params.delete('hasJob');
+  }
+  setSearchParams(params);
+};
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
@@ -135,8 +224,8 @@ const Companies = () => {
           </p>
         </div>
 
-        <div className="flex justify-center gap-10 mt-6 flex-col lg:flex-row">
-          <div className="w-full lg:w-[450px] bg-[var(--itemColor)] shadow-lg rounded-[8px] h-auto">
+        <div className="flex justify-center gap-10 mt-6 flex-col lg:flex-row ">
+          <div className="w-full lg:w-[450px] bg-[var(--itemColor)] shadow-lg rounded-[8px] h-auto self-start py-5">
             <div className="p-4 ">
               <div className="flex justify-between border-b-2  pb-3 border-[var(--primary)]">
                 <p className="text-[18px] font-bold">Որոնման Ֆիլտրներ</p>
@@ -144,13 +233,19 @@ const Companies = () => {
                   className="text-[18px] font-bold text-[var(--primary)] cursor-pointer"
                   onClick={() => {
                     setInputValue('');
-                    setSearchParams({ page: 1, q: '' });
+                    setSelectedCities([]); 
+
+                    const params = new URLSearchParams(searchParams);
+                    params.delete('q');    
+                    params.delete('city');  
+                    params.set('page', '1'); 
+                    setSearchParams(params); 
                   }}
                 >
                   Մաքրել Բոլորը
                 </p>
               </div>
-
+                  
               <form onSubmit={handleSearchSubmit}>
                 <input
                   type="text"
@@ -160,6 +255,76 @@ const Companies = () => {
                   onChange={handleInputChange}
                 />
               </form>
+              <FormControlLabel className='mt-3'
+                control={
+                  <Checkbox
+                    checked={hasJob}
+                    onChange={handleHasJobToggle}
+                    sx={{
+                      color: "#0f687e",
+                      "&.Mui-checked": {
+                        color: "#0f687e",
+                      },
+                    }}
+                  />
+                }
+                label="Թափուր աշխատատեղեր ունեցող"
+              />
+
+               <Accordion className=' rounded-[8px]'
+                sx={{
+                      boxShadow: 'none',      
+                      border: 'none',       
+                      '&::before': {
+                        display: 'none',       
+                      },
+                      padding:"none",
+                      }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="city-checkboxes"
+                  id="city-accordion"
+                  sx={{
+                    paddingLeft: "0 !important",
+                    paddingRight: "0 !important",
+                  }}
+                  className='h-[60px]'
+                >
+                  <Typography>Քաղաքներ</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gap: 2,
+                      gridTemplateColumns: "repeat(2, 1fr)", // 2 սյուն
+                      maxWidth: "600px"
+                    }}
+                  >
+                    {cityArray.map((city, index) => {
+                      const isChecked = selectedCities.includes(city);
+                      return (
+                        <FormControlLabel
+                          key={index}
+                          control={
+                            <Checkbox
+                              checked={isChecked}
+                              onChange={() => handleToggle(city)}
+                              sx={{
+                                color: "#0f687e",
+                                "&.Mui-checked": {
+                                  color: "#0f687e"
+                                }
+                              }}
+                            />
+                          }
+                          label={city}
+                        />
+                      );
+                    })}
+                  </Box>
+                </AccordionDetails>
+              </Accordion>
             </div>
           </div>
 

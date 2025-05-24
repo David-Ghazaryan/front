@@ -1,6 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useAuth } from "../../providers/auth";
 
 const RegisterPage = () => {
+  const {status, user} = useAuth();
+
+   if(status === 'loading') {
+    return <p>Loading...</p>
+  }
+
+  if(user) {
+    return <Navigate to="/dashboard" replace />
+  }
+
     return (
       <div className="min-h-157 flex items-center justify-center bg-[var(--light)] ">
         <div className="bg-[var(--itemColor)] shadow-lg rounded-lg p-10 w-full max-w-md ">
@@ -13,7 +24,7 @@ const RegisterPage = () => {
             </Link>
             <Link to={"/sign-up/candidat-reg"}>
               <div className="font-semibold w-90 text-[var(--primary)] border-[var(--primary)] py-3 rounded text-center border" >
-                Որպես թեքնացու
+                Որպես թեկնածու
               </div>
             </Link>
           </div>

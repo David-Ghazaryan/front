@@ -2,8 +2,8 @@
 import FmdGoodOutlinedIcon from '@mui/icons-material/FmdGoodOutlined';
 import WorkOutlineOutlinedIcon from '@mui/icons-material/WorkOutlineOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
-
-const TopJob = ({ logo, companyName, city, title, description, scheduleType, deadline }) => {
+import { Link } from 'react-router-dom';
+const TopJob = ({ companyId,jobId,logo, companyName, city, title, description, scheduleType, deadline }) => {
   return (
     <div className='w-[270px] h-[270px] bg-[var(--itemColor)] rounded-[5px] shadow-lg'>
       <div className='flex flex-col p-4 h-full justify-between'>
@@ -16,7 +16,9 @@ const TopJob = ({ logo, companyName, city, title, description, scheduleType, dea
             />
           </div>
           <div className='flex flex-col justify-center'>
-            <p className='font-bold  pl-1'>{companyName}</p>
+            <Link to={`/companies/${companyId}`}>
+              <p className='font-bold  pl-1  hover:underline'>{companyName}</p>
+            </Link>
             <div className='flex items-center'>
               <FmdGoodOutlinedIcon sx={{ color: '#9CA3AF' }} />
               <p className='font-normal text-gray-400'>{city}</p>
@@ -25,7 +27,9 @@ const TopJob = ({ logo, companyName, city, title, description, scheduleType, dea
         </div>
 
         <div>
-          <p className='py-0 font-bold text-[14px]'>{title}</p>
+          <Link to={`/job/${jobId}`}>
+            <p className='py-0 font-bold text-[14px] hover:underline'>{title}</p>
+          </Link>
           <p className='font-light py-2 text-gray-400 text-[14px]'>
             {description?.length > 50 ? `${description.slice(0, 50)}...` : description}
           </p>

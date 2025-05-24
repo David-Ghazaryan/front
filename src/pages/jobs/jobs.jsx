@@ -8,7 +8,45 @@ import GorcUxiService from '../../services/gorcuxi_service';
 import TopJob from './top-job';
 import Job from './job';
 import OnTop from '../../components/onTop/onTop';
-
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  FormControlLabel,
+  Checkbox,
+  Box,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+const cityArray = [
+  "Երևան",
+  "Գյումրի",
+  "Վանաձոր",
+  "Վաղարշապատ",
+  "Հրազդան",
+  "Աբովյան",
+  "Կապան",
+  "Չարենցավան",
+  "Գավառ",
+  "Արտաշատ",
+  "Մասիս",
+  "Սիսյան",
+  "Արմավիր",
+  "Սպիտակ",
+  "Սևան",
+  "Ալավերդի",
+  "Իջևան",
+  "Եղեգնաձոր",
+  "Բերդ",
+  "Դիլիջան",
+  "Այլ"
+];
+const levelTypes = {
+  NOT_REQUIRED: "Չի պահանջվում",
+  BEGINNER: "Սկսնակ",
+  MIDDLE: "Միջին",
+  EXPERIENCED: "Փորձառու",
+};
 const service = new GorcUxiService();
 
 const Jobs = () => {
@@ -18,9 +56,22 @@ const Jobs = () => {
   const [inputValue, setInputValue] = useState(searchQuery);
   const [placeholder, setPlaceholder] = useState('');
   const [jobs, setJobs] = useState([]);
+  const [industryData, setIndustryData] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedLevels, setSelectedLevels] = useState([]);
+  const [selectedIndustries, setSelectedIndustries] = useState([]);
+  const [selectedSalary, setSelectedSalary] = useState(false);
+  const [isForStudents, setIsForStudents] = useState(false);
+  const [selectedCities, setSelectedCities] = useState(() => {
+    const citiesFromURL = searchParams.getAll('city');
+    return citiesFromURL.length ? citiesFromURL : [];
+  });
+  const [selectedSchedule, setSelectedSchedule] = useState(() => {
+    const scheduleFromURL = searchParams.get('schedule');
+    return scheduleFromURL || '';
+  });
   const jobsPerPage = 5;
 
   useEffect(() => {
@@ -30,6 +81,10 @@ const Jobs = () => {
         const [jobData, companyData] = await Promise.all([service.getAllJobs(), service.getCompanies()]);
         setJobs(jobData);
         setCompanies(companyData);
+        const industry = await service.getAllIndusty();
+        setIndustryData(industry);
+        console.log("industry", JSON.stringify(industry, null, 2));
+
       } catch (err) {
         setError('Չհաջողվեց բեռնել տվյալները');
         console.error(err);
@@ -39,6 +94,16 @@ const Jobs = () => {
     };
     fetchData();
   }, []);
+  useEffect(() => {
+    const citiesFromURL = searchParams.getAll('city');
+    setSelectedCities(citiesFromURL);
+
+    const scheduleFromURL = searchParams.get('schedule');
+    setSelectedSchedule(scheduleFromURL || '');
+
+    const levelsFromURL = searchParams.getAll('level');
+    setSelectedLevels(levelsFromURL);
+  }, [searchParams]);
 
   useEffect(() => {
     const text = 'Փնտրեք աշխատանք այստեղ...';
@@ -59,19 +124,101 @@ const Jobs = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-  };
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString();
+};
+const handleToggleSalaryStudent = (filterType) => {
+  if (filterType === 'salary') {
+    setSelectedSalary(!selectedSalary);
+  } else if (filterType === 'students') {
+    setIsForStudents(!isForStudents);
+  }
+};
+const handleToggleIndustry = (industryId) => {
+  const newSelectedIndustries = selectedIndustries.includes(industryId) ? [] : [industryId];
+  setSelectedIndustries(newSelectedIndustries);
 
-  const filteredJobs = useMemo(() => {
-    return jobs.filter((job) => {
-      const jobTitleMatch = job.title?.toLowerCase().includes(searchQuery.toLowerCase());
-      const company = companies.find((c) => c.id === job.companyId);
-      const companyNameMatch = company?.title?.toLowerCase().includes(searchQuery.toLowerCase());
-      return jobTitleMatch || companyNameMatch;
-    });
-  }, [jobs, companies, searchQuery]);
+  const newParams = new URLSearchParams(searchParams);
+  newParams.delete('industry');
+  if (newSelectedIndustries.length) {
+    newParams.append('industry', newSelectedIndustries[0]);
+  }
+  setSearchParams(newParams);
+};
+const handleScheduleToggle = (schedule) => {
+  const newParams = new URLSearchParams();
+
+  if (selectedSchedule === schedule) {
+    setSelectedSchedule('');
+  } else {
+    setSelectedSchedule(schedule);
+    newParams.set('schedule', schedule);
+  }
+  newParams.set('page', '1');
+  if (searchQuery) newParams.set('q', searchQuery);
+  Array.from(new Set(selectedCities)).forEach((city) => newParams.append('city', city));
+  setSearchParams(newParams);
+};
+// eslint-disable-next-line no-unused-vars
+const [selectedCity, setSelectedCity] = useState(() => {
+  return searchParams.get('city') || '';
+});
+
+const handleToggleLevel = (levelKey) => {
+  let newSelectedLevels;
+  if (selectedLevels.includes(levelKey)) {
+    newSelectedLevels = selectedLevels.filter((level) => level !== levelKey);
+  } else {
+    newSelectedLevels = [...selectedLevels, levelKey];
+  }
+  setSelectedLevels(newSelectedLevels);
+
+  const newParams = new URLSearchParams(searchParams);
+  newParams.delete('level');
+  newSelectedLevels.forEach(level => newParams.append('level', level));
+  setSearchParams(newParams);
+};
+
+const handleToggle = (city) => {
+  let newSelectedCities;
+
+  if (selectedCities.includes(city)) {
+    newSelectedCities = selectedCities.filter((c) => c !== city);
+  } else {
+    newSelectedCities = [...selectedCities, city];
+  }
+  setSelectedCities(newSelectedCities);
+
+  const newParams = new URLSearchParams();
+
+  newSelectedCities.forEach((c) => newParams.append('city', c));
+
+  if (searchQuery) newParams.set('q', searchQuery);
+  if (selectedSchedule) newParams.set('schedule', selectedSchedule);
+  newParams.set('page', '1');
+
+  setSearchParams(newParams);
+};
+
+const filteredJobs = useMemo(() => {
+  return jobs.filter((job) => {
+    const jobTitleMatch = job.title?.toLowerCase().includes(searchQuery.toLowerCase());
+    const company = companies.find((c) => c.id === job.companyId);
+    const companyNameMatch = company?.title?.toLowerCase().includes(searchQuery.toLowerCase());
+    const cityMatch = selectedCities.length === 0 || selectedCities.includes(job.city);
+    const scheduleMatch = !selectedSchedule || job.scheduleType === selectedSchedule;
+    const levelMatch = 
+      selectedLevels.length === 0 ||
+      selectedLevels.some((level) => 
+        Object.keys(levelTypes).find((key) => key === job.level) === level
+      );
+
+    const salaryMatch = !selectedSalary || !!job.salary;
+    const studentMatch = !isForStudents || job.isForStudents;
+    return (jobTitleMatch || companyNameMatch) && cityMatch && scheduleMatch && levelMatch && salaryMatch && studentMatch;
+  });
+}, [jobs, companies, searchQuery, selectedCities, selectedSchedule, selectedLevels, selectedSalary, isForStudents]);
 
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
@@ -92,7 +239,11 @@ const Jobs = () => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    setSearchParams({ page: 1, q: inputValue });
+    const newParams = new URLSearchParams();
+    if (inputValue) newParams.set('q', inputValue);
+    newParams.set('page', '1');
+    selectedCities.forEach(city => newParams.append('city', city));
+    setSearchParams(newParams);
   };
 
   const handlePageChange = (_, value) => {
@@ -103,8 +254,9 @@ const Jobs = () => {
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+console.log(jobs);
 
-  if (loading) {
+ if (loading) {
     return (
       <div className="container">
         <div className="flex justify-between gap-4 my-1">
@@ -157,24 +309,295 @@ const Jobs = () => {
   }
 
   if (error) return <p className="text-red-500 text-center mt-10">{error}</p>;
-const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+
   return (
     <>
       <OnTop />
       <div className="container">
         <div className="flex justify-between my-1">
           <aside>
-            <div className="mt-[85px] w-[380px] h-[500px] bg-[var(--itemColor)] shadow-lg rounded-[8px]">
+            <div className="mt-[85px] w-[380px] bg-[var(--itemColor)] shadow-lg rounded-[8px]">
               <div className="p-4">
                 <div className="flex justify-between border-b-2 pb-3 border-[var(--primary)]">
                   <p className="text-[18px] font-bold">Որոնման Ֆիլտրներ</p>
                   <p onClick={() => {
                     setInputValue('');
-                    setSearchParams({ page: 1, q: '' });
-                    }} 
-                    className="text-[18px] font-bold text-[var(--primary)] cursor-pointer">Մաքրել Բոլորը
-                    </p>
+                    setSelectedCities([]);
+                    setSelectedCity('');
+                    setSelectedLevels([]);
+                    setSelectedSchedule('');
+                    setSelectedIndustries([]);
+                    setSelectedSalary(false);
+                    setIsForStudents(false);
+                    setSearchParams(new URLSearchParams({ page: '1' }));
+                  }}
+                  className="text-[18px] font-bold text-[var(--primary)] cursor-pointer">
+                    Մաքրել բոլորը
+                  </p>
                 </div>
+                {/* Ոլորտի ֆիլտր */}
+                <Accordion 
+                  className="mt-5 rounded-[8px]"
+                  sx={{
+                    boxShadow: 'none',
+                    border: 'none',
+                    '&::before': {
+                      display: 'none',
+                    },
+                  }}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="industry-checkboxes"
+                    id="industry-accordion"
+                    className="h-[10px]"
+                    sx={{
+                      paddingLeft: "0 !important",
+                      paddingRight: "0 !important",
+                    }}
+                  >
+                    <Typography>Ոլորտ</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gap: 1,
+                        gridTemplateColumns: 'repeat(1, 1fr)',
+                        maxWidth: '600px',
+                      }}
+                    >
+                      {industryData.map((industry, index) => {
+                        const isChecked = selectedIndustries.includes(industry.id); 
+                        return (
+                          <FormControlLabel
+                            key={index}
+                            control={
+                              <Checkbox
+                                checked={isChecked}
+                                onChange={() => handleToggleIndustry(industry.id)} 
+                                sx={{
+                                  color: '#0f687e',
+                                  '&.Mui-checked': {
+                                    color: '#0f687e',
+                                  },
+                                }}
+                              />
+                            }
+                            label={industry.title}
+                          />
+                        );
+                      })}
+
+
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+                {/* city */}
+                <Accordion 
+                  className=" rounded-[8px] "
+                  sx={{
+                      boxShadow: 'none',       
+                      border: 'none',        
+                      '&::before': {
+                        display: 'none',       
+                      },}}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="city-checkboxes"
+                    id="city-accordion"
+                    className="h-[10px]"
+                    sx={{
+                      paddingLeft: "0 !important",
+                      paddingRight: "0 !important",
+                    }}
+                  >
+                    <Typography>Քաղաքներ</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Box
+                      sx={{
+                        display: 'grid',
+                        gap: 2,
+                        gridTemplateColumns: 'repeat(2, 1fr)',
+                        maxWidth: '600px',
+                      }}
+                    >
+                      {cityArray.map((city, index) => {
+                        const isChecked = selectedCities.includes(city);
+                        return (
+                          <FormControlLabel
+                            key={index}
+                            control={
+                              <Checkbox
+                                checked={isChecked}
+                                onChange={() => handleToggle(city)}
+                                sx={{
+                                  color: '#0f687e',
+                                  '&.Mui-checked': {
+                                    color: '#0f687e',
+                                  },
+                                }}
+                              />
+                            }
+                            label={city}
+                          />
+                        );
+                      })}
+                    </Box>
+                  </AccordionDetails>
+                </Accordion>
+                {/* scheduleType */}
+                <Accordion 
+                className="mt-1 rounded-[8px]"
+                 sx={{
+                      boxShadow: 'none', 
+                      border: 'none',    
+                      '&::before': {
+                        display: 'none',     
+                      },}}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="schedule-checkboxes"
+                  id="schedule-accordion"
+                  className="h-[10px]"
+                  sx={{
+                      paddingLeft: "0 !important",
+                      paddingRight: "0 !important",
+                    }}
+                >
+                <Typography>Դրույք</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gap: 1,
+                      gridTemplateColumns: 'repeat(1, 1fr)',
+                      maxWidth: '600px',
+                    }}
+                  >
+                    {Object.entries(scheduleTypes).map(([key, label], index) => {
+                      const isChecked = selectedSchedule === key;
+
+                      return (
+                        <FormControlLabel
+                          key={index}
+                          control={
+                            <Checkbox
+                              checked={isChecked}
+                              onChange={() => handleScheduleToggle(key)}
+                              sx={{
+                                color: '#0f687e',
+                                '&.Mui-checked': {
+                                  color: '#0f687e',
+                                },
+                              }}
+                            />
+                          }
+                          label={label}
+                        />
+                      );
+                    })}
+                  </Box>
+                </AccordionDetails>
+                </Accordion>
+                {/* level */}
+                <Accordion 
+                className="mt-1 rounded-[8px]"
+                 sx={{
+                      boxShadow: 'none', 
+                      border: 'none',    
+                      '&::before': {
+                        display: 'none',     
+                      },}}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="level-checkboxes"
+                  id="level-accordion"
+                  className="h-[10px]"
+                  sx={{
+                      paddingLeft: "0 !important",
+                      paddingRight: "0 !important",
+                    }}
+                >
+                  <Typography>Աշխատանքային փորձ</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gap: 1,
+                      gridTemplateColumns: "repeat(1, 1fr)",
+                      maxWidth: "600px",
+                    }}
+                  >
+                    {Object.entries(levelTypes).map(([key, label]) => {
+                      const isChecked = selectedLevels.includes(key);
+                      return (
+                        <FormControlLabel
+                          key={key}
+                          control={
+                            <Checkbox
+                              checked={isChecked}
+                              onChange={() => handleToggleLevel(key)}
+                              sx={{
+                                color: "#0f687e",
+                                "&.Mui-checked": {
+                                  color: "#0f687e",
+                                },
+                              }}
+                            />
+                          }
+                          label={label}
+                        />
+                      );
+                    })}
+                  </Box>
+                </AccordionDetails>
+                </Accordion>
+                {/*other */}
+                <Accordion
+                 className="mt-1 rounded-[8px]" sx={{ boxShadow: 'none', border: 'none', '&::before': { display: 'none' } }}>
+                <AccordionSummary 
+                  expandIcon={<ExpandMoreIcon />} 
+                  aria-controls="salary-student-checkboxes" 
+                  id="salary-student-accordion"
+                  sx={{
+                      paddingLeft: "0 !important",
+                      paddingRight: "0 !important",
+                    }}>
+                    
+                  <Typography>Այլ</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Box sx={{ display: "grid", gap: 1, gridTemplateColumns: "repeat(1, 1fr)", maxWidth: "600px" }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={selectedSalary}
+                          onChange={() => handleToggleSalaryStudent('salary')}
+                          sx={{ color: "#0f687e", "&.Mui-checked": { color: "#0f687e" } }}
+                        />
+                      }
+                      label="Աշխատավարձը նշված է"
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={isForStudents}
+                          onChange={() => handleToggleSalaryStudent('students')}
+                          sx={{ color: "#0f687e", "&.Mui-checked": { color: "#0f687e" } }}
+                        />
+                      }
+                      label="Ուսանողների համար"
+                    />
+                  </Box>
+                </AccordionDetails>
+                </Accordion>
+
+
               </div>
             </div>
           </aside>
@@ -215,10 +638,12 @@ const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
                       title={job.title}
                       deadline={formatDate(job.deadline)}
                       salary={job.salary}
+                      scheduleType={scheduleTypes[job.scheduleType]}
+                      levelTypes={levelTypes[job.level]}
                     />
                   );
                 })}
-                {totalPages > 1 && ( 
+                {totalPages > 1 && (
                   <Stack className="my-5 flex items-center justify-center">
                     <Pagination
                       count={totalPages}
@@ -252,6 +677,8 @@ const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
                 return (
                   <TopJob
                     key={job.id}
+                    jobId={job.id}
+                    companyId={jobCompany.id}
                     logo={jobCompany?.logo ? `${config.BACK_URL}${jobCompany.logo}` : null}
                     companyName={jobCompany?.title}
                     city={job.city}

@@ -1,5 +1,4 @@
 import config from '../config/public';
-
 const page = 1;
 const limit = 1000;
 
@@ -34,19 +33,6 @@ class GorcUxiService {
       throw error;
     }
   };
-  // getAllReviews = async () => {
-  //   try {
-  //     const response = await fetch(`${config.BACK_URL}/api/reviews`);
-  //     if (!response.ok) {
-  //       throw new Error('Network response was not ok');
-  //     }
-  //     const data = await response.json();
-  //     return data.data;
-  //   } catch (error) {
-  //     console.error('Error fetching all companies:', error);
-  //     throw error;
-  //   }
-  // };
 
   getCompany = async (id) => {
     try {
@@ -100,6 +86,19 @@ class GorcUxiService {
       throw error;
     }
   };
+  getAllIndusty = async () => {
+    try {
+      const response = await fetch(`${config.BACK_URL}/api/industry`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching all industry:', error);
+      throw error;
+    }
+  };
 
   getJob = async (id) => {
     try {
@@ -114,44 +113,18 @@ class GorcUxiService {
       throw error;
     }
   };
-  // getIndustryById = async (id) => {
-  //   try {
-  //     const response = await fetch(`${config.BACK_URL}/api/industry/${id}`);
-  //     if (!response.ok) {
-  //       throw new Error('Industry not found');
-  //     }
-  //     const data = await response.json();
-  //     return data;
-  //   } catch (error) {
-  //     console.error('Error fetching industry:', error);
-  //     throw error;
-  //   }
-  // };
-  // _pricing = (pricing) => {
-  //   return {
-  //     id: pricing.id,
-  //     title: pricing.title,
-  //     price: pricing.price,
-  //     maxJobCount: pricing.maxJobCount,
-  //   };
-  // };
-  // _company = (company) => {
-  //   return {
-  //     id: company.id,
-  //     title: company.title,
-  //     mail: company.mail,
-  //     logo: `${config.BACK_URL}${company.logo}`,
-  //     backgroundImage: `${config.BACK_URL}${company.backgroundImage}`,
-  //     phoneNumber: company.phoneNumber,
-  //     minWorkes: company.minWorkes,
-  //     maxWorkes: company.maxWorkes,
-  //     description: company.description,
-  //     location: company.location,
-  //     city: company.city,
-  //     webSite: company.webSite,
-  //     jobs: company.jobs || [],
-  //   };
-  // };
+  getIndustryById = async (id) => {
+    try {
+      const response = await fetch(`${config.BACK_URL}/api/industry/${id}`);
+      if (!response.ok) {
+        throw new Error('Industry not found');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching industryId:', error);
+      throw error;
+    }
+  };
 }
-
 export default GorcUxiService;

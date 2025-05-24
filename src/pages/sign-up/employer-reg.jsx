@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { TextField, Button, MenuItem } from "@mui/material";
-import { useAuth } from "../../context/useAuth";
-
+import { Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from "../../providers/auth";
+import { axiosInstance } from "../../axios/axios";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 const EmployerRegistration = () => {
-  const { register } = useAuth(); 
+  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const {status, user } =useAuth();
 
   const [form, setForm] = useState({
     fullName: "",
@@ -17,8 +22,16 @@ const EmployerRegistration = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    await register(form); 
+    try {
+      e.preventDefault();
+      await axiosInstance.post('/auth/sign-up', form);
+      navigate('/sent-email');
+    } catch (error) {
+      if(error.response.data.message === 'Այս էլ․ հասցեն արդեն զբաղված է') 
+      {
+        setError('Այս էլ․ հասցեն արդեն զբաղված է');
+      }
+    }
   };
 
   const inputStyle = {
@@ -29,6 +42,18 @@ const EmployerRegistration = () => {
       '&.Mui-focused fieldset': { borderColor: 'var(--primary)' },
     },
   };
+
+  if(status === 'loading') {
+    return (
+    <Box sx={{ display: 'flex' }}>
+      <CircularProgress />
+    </Box>
+    )
+  }
+
+  if(user) {
+    return <Navigate to="/dashboard" replace />
+  }
 
   return (
     <div className="min-h-157 flex items-center justify-center bg-[var(--light)]">
@@ -82,6 +107,7 @@ const EmployerRegistration = () => {
               <MenuItem value="female">Իգական</MenuItem>
             </TextField>
 
+{error && <p className="text-red-500">{error}</p>}
             <div className="mt-4">
               <Button
                 fullWidth

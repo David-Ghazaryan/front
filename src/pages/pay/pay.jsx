@@ -52,7 +52,7 @@ const PayPage = () => {
 
     console.log("Վճարելու փորձ:", { cardNumber, cardName, expDate, cvv });
     setTimeout(() => {
-      navigate('/');  // Navigate to homepage after 3 seconds
+      navigate('/'); 
     }, 3000);
   };
 

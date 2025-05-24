@@ -2,8 +2,9 @@
 import FmdGoodOutlinedIcon from '@mui/icons-material/FmdGoodOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import LocalAtmOutlinedIcon from '@mui/icons-material/LocalAtmOutlined';
+import WorkOutlineOutlinedIcon from '@mui/icons-material/WorkOutlineOutlined';
 import { Link } from "react-router-dom";
-const Job = ({logo,jobId,companyId,companyName,city,title,deadline,salary}) => {
+const Job = ({logo,jobId,companyId,companyName,city,title,deadline,salary,scheduleType}) => {
      return (
     <div className="w-full min-h-[100px] bg-[var(--itemColor)]   rounded-[5px] shadow-lg mt-5">
         <div className='flex p-3'>
@@ -32,6 +33,11 @@ const Job = ({logo,jobId,companyId,companyName,city,title,deadline,salary}) => {
                     <div className='flex gap-1'>
                         <LocalAtmOutlinedIcon sx={{ color: '#9CA3AF' }}/>
                         <p className='font-normal text-gray-400'>{salary} Դրամ</p>
+                    </div>:""}
+                    {scheduleType ?
+                    <div className='flex gap-1'>
+                        <WorkOutlineOutlinedIcon sx={{ color: '#9CA3AF' }}/>
+                        <p className='font-normal text-gray-400'>{scheduleType}</p>
                     </div>:""}
                 </div>
             </div>

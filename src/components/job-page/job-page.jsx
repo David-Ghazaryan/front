@@ -29,7 +29,7 @@ const JobPage = () => {
 
         // if (jobRes.industryId) {
         //   const industry = await service.getIndustryById(jobRes.industryId);
-        //   setIndustryName(industry.value || 'Ոլորտը նշված չէ');
+        //   setIndustryName(industry || 'Ոլորտը նշված չէ');
         // }
       } catch (err) {
         console.error('Սխալ տվյալները բեռնելիս:', err);
@@ -91,15 +91,7 @@ const JobPage = () => {
   }
   const companyId = job.companyId;
 
-  // const {
-  //   title = '',
-  //   logo = '',
-  //   backgroundImage = '',
-  //   phoneNumber = '',
-  //   minWorkes,
-  //   maxWorkes,
-  //   description = ''
-  // } = company;
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString(); 
@@ -112,14 +104,22 @@ const JobPage = () => {
     TEMPORARY: "Ժամանակավոր/Սեզոնային",
     INTERNSHIP: "Ինտերնշիփ"
   };
-  console.log(scheduleTypes)  
+
+  const levelTypes = {
+  NOT_REQUIRED: "Չի պահանջվում",
+  BEGINNER: "Սկսնակ",
+  MIDDLE: "Միջին",
+  EXPERIENCED: "Փորձառու"
+};
+
   const {
     title = '',
     industryId='',
     deadline = '',
     city = '',
     scheduleType = '',
-    description = ''
+    description = '',
+    level =''
   } = job;
   
 
@@ -147,6 +147,7 @@ const JobPage = () => {
           <p className='text-gray-500'>Վերջնաժամկետ՝ <span className='text-black font-bold'>{formatDate(deadline)}</span></p>
           <p className='text-gray-500'>Քաղաք՝ <span className='text-black font-bold'>{city}</span></p>
           <p className='text-gray-500'>Դրույք՝ <span className='text-black font-bold'>{scheduleTypes[scheduleType]}</span></p>
+          <p className='text-gray-500'>Աշխատանքային փորձ` <span className='text-black font-bold'>{levelTypes[level]}</span></p>
         </div>
       </div>
       <div className='flex gap-5 my-5'>
