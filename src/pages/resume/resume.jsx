@@ -17,28 +17,29 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 
-const DATA_INITIAL = { position: "", company: "", startDate: "", endDate: "", description: "" }
 import {
-      Accordion,
+  Accordion,
   AccordionSummary,
   AccordionDetails,
   TextField,
   Typography,
   IconButton,
   MenuItem, 
-  } from "@mui/material";
+} from "@mui/material";
 import './resume.css';
 
 const ResumeBuilder = () => {
+  const DATA_INITIAL = { position: "", company: "", startDate: "", endDate: "", description: "" }
+  const DATA_EDUCATION = { faculty: "", university: "", startDate: "", endDate: "", description: "" }
   const languageLevels = ["Մայրենի", "Սկսնակ", "Միջին", "Առաջադեմ"];
-  const languageOptions = [
-    "Հայերեն",
-    "Անգլերեն",
-    "Ռուսերեն",
-    "Ֆրանսերեն",
-    "Գերմաներեն",
-    "Իսպաներեն",
-    "Իտալերեն",
+    const languageOptions = [
+      "Հայերեն",
+      "Անգլերեն",
+      "Ռուսերեն",
+      "Ֆրանսերեն",
+      "Գերմաներեն",
+      "Իսպաներեն",
+      "Իտալերեն",
     "Չինարեն",
     "Ճապոներեն",
     "Կորեերեն",
@@ -78,6 +79,7 @@ const ResumeBuilder = () => {
     date: "",
     bio: "",
     experiences: [DATA_INITIAL], 
+    education: [DATA_EDUCATION],
     languageLevel: languages
   });
 
@@ -123,7 +125,25 @@ const handleLevelChange = (id, field, value) => {
             ),
           }));
   }, []);
+  const removeEducation = useCallback((index) => {
+    setFormData((prev) => ({
+      ...prev,
+      education: prev.education.map((exp, i) =>
+              i === index
+                ? { faculty: "", university: "", startDate: "", endDate: ""} 
+                : exp
+            ),
+          }));
+  }, []);
 
+  const handleEducationChange = (index, field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      education: prev.education.map((exp, i) =>
+        i === index ? { ...exp, [field]: value } : exp
+      ),
+    }));
+  };
   const handleExperienceChange = (index, field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -146,7 +166,7 @@ const handleLevelChange = (id, field, value) => {
       date: "",
       bio: "",
       experiences: [DATA_INITIAL],
-      // languageLevel:  [{ language: "", level: "", id: Date.now() }]
+      education:[DATA_EDUCATION]
     });
   };
 
@@ -187,7 +207,7 @@ const handleLevelChange = (id, field, value) => {
                 <p className="text-[var(--primary)] font-medium">Ջնջել</p>
               </div>
             </div>
-            {/* Անձնական տվյալներ */}
+            {/* data*/}
            <Accordion 
            className="mt-5 rounded-[8px]"
                   sx={{
@@ -362,7 +382,7 @@ const handleLevelChange = (id, field, value) => {
                 />
               </AccordionDetails>
              </Accordion>
-             {/* Աշխատանքային փորձ */}
+             {/* experiences*/}
             {formData.experiences.map((exp, index) => (
                 <Accordion key={index}
                 className="mt-5 rounded-[8px]"
@@ -453,7 +473,79 @@ const handleLevelChange = (id, field, value) => {
                 
                 </Accordion>
             ))}
-            {/* լեզուներ */}
+            {/* education */}
+              {formData.education.map((exp, index) => (
+                <Accordion key={index}
+                className="mt-5 rounded-[8px]"
+                sx={{
+                  boxShadow: 'none',
+                  border: 'none',
+                  '&::before': {
+                    display: 'none',
+                  },
+                }}>
+                  <AccordionSummary    expandIcon={<ExpandMoreIcon />}
+                  sx={{
+                      paddingLeft: "0 !important",
+                      paddingRight: "0 !important",
+                    }}>
+                      <Typography>Կրթություն</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails >
+                    <TextField 
+                        label="Ֆակուլտետ" 
+                        fullWidth 
+                        margin="normal" 
+                        value={exp.faculty} 
+                        onChange={(e) => handleEducationChange(index, "faculty", e.target.value)} 
+                        sx={{
+                            "& .MuiOutlinedInput-root": {
+                              "&.Mui-focused fieldset": {
+                                borderColor: "#0f687e", 
+                              },
+                            },"& .MuiInputLabel-root.Mui-focused": {
+                                color: "#0f687e",
+                                },
+                        }}
+                    />
+                    <TextField 
+                        label="Համալսարան" 
+                        fullWidth 
+                        margin="normal" 
+                        value={exp.university} 
+                        onChange={(e) => handleEducationChange(index, "university", e.target.value)} 
+                        sx={{
+                            "& .MuiOutlinedInput-root": {
+                              "&.Mui-focused fieldset": {
+                                borderColor: "#0f687e", 
+                              },
+                            },"& .MuiInputLabel-root.Mui-focused": {
+                                color: "#0f687e",
+                                },
+                        }}
+                    />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                            label="Աշխատանքի սկիզբ"
+                            value={dayjs(exp.startDate || new Date())}
+                            onChange={(newValue) => handleEducationChange(index, "startDate", newValue ? newValue.format("DD.MM.YYYY") : "")}
+                            slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
+                        />
+                        <DatePicker
+                            label="Աշխատանքի ավարտ"
+                            value={dayjs(exp.endDate || new Date())}
+                            onChange={(newValue) => handleEducationChange(index, "endDate", newValue ? newValue.format("DD.MM.YYYY") : "")}
+                            slotProps={{ textField: { fullWidth: true, margin: "normal" } }}
+                        />
+                    </LocalizationProvider>
+                    <IconButton onClick={() => removeEducation(index)} >
+                        <DeleteIcon />
+                    </IconButton>
+                  </AccordionDetails>
+                
+                </Accordion>
+              ))}
+            {/* languages */}
               <Accordion 
                 expanded={expanded === "languages"} 
                 onChange={handleAccordionChange("languages")}
@@ -549,7 +641,7 @@ const handleLevelChange = (id, field, value) => {
                   
                 </AccordionDetails>
               </Accordion>
-
+              
             <button className="flex justify-center w-full bg-[var(--primary)] text-white p-2 rounded mt-4 cursor-pointer" onClick={handleDownload}>
               <DownloadIcon /> <p>Ներբեռնել</p>
             </button>
@@ -571,9 +663,9 @@ const handleLevelChange = (id, field, value) => {
                 {formData.bio && 
                 <div className="flex flex-col">
                     <p className=" text-[var(--primary)] font-bold text-2xl">Իմ մասին</p>
-                    <p>{formData.bio}</p>
+                    <p className="indent-5">{formData.bio}</p>
                 </div> }
-                <div className="flex flex-col">
+                <div className="flex flex-col mt-3">
                   <p className=" text-[var(--primary)] font-bold text-2xl">Աշխատանքային փորձ</p>
                     { formData.experiences && formData.experiences.map((exp, index) => (
                     <div key={index} className="flex flex-col">
@@ -588,6 +680,23 @@ const handleLevelChange = (id, field, value) => {
                             </div>
                         </div>
                         <p> {exp.description ? exp.description :"Նկարագրություն"} </p>
+                  </div>
+                ))} 
+                </div> 
+                <div className="flex flex-col mt-3">
+                  <p className=" text-[var(--primary)] font-bold text-2xl">Կրթություն</p>
+                    { formData.education && formData.education.map((exp, index) => (
+                    <div key={index} className="flex flex-col">
+                        <div className="flex justify-between">
+                            <div className="flex flex-col">
+                                <p> <strong> {exp.university ? exp.university :"Համալսարան"} </strong></p>
+                                <p> {exp.faculty ? exp.faculty :"Ֆակուլտետ"}  </p>
+                            </div>
+                            <div className="flex">
+                                <p> <strong> {exp.startDate ? exp.startDate :"Սկսած"}-</strong></p>
+                                <p> <strong> {exp.endDate ? exp.endDate :"Մինչ այսօր"} </strong></p>
+                            </div>
+                        </div>
                   </div>
                 ))} 
                 </div> 

@@ -135,12 +135,13 @@ const handleHasJobToggle = () => {
   const newHasJob = !hasJob;
   setHasJob(newHasJob);
 
+
   const params = new URLSearchParams(searchParams);
   if (newHasJob) {
     params.set('hasJob', 'true');
   } else {
     params.delete('hasJob');
-  }
+  }``
   setSearchParams(params);
 };
 

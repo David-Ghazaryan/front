@@ -23,10 +23,10 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
-      reset(user); // Ֆորմի դաշտերը նախապես լցնել
+      reset(user); 
     }
   }, [user, reset]);
-
+  console.log(user);
   const handleSave = async (data) => {
     const formData = new FormData();
     formData.append("phone", data.phone);
@@ -38,8 +38,7 @@ export const Dashboard = () => {
     }
 
     try {
-      const response = await axios.put(
-        `${config.BACK_URL}/api/users/${user.id}`,
+      const response = await axios.put(`${config.BACK_URL}/api/users/info`,
         formData,
         {
           headers: {
@@ -75,7 +74,7 @@ export const Dashboard = () => {
         <div className="bg-[var(--itemColor)] shadow p-4 rounded-lg flex items-center justify-between">
           <div className="flex items-center gap-4">
             <img
-              src={ user?.avatar ? `${config.BACK_URL}${user.avatar}`: user?.gender === "male" ? femaleAvatar: maleAvatar}
+              src={ user?.avatar ? `${config.BACK_URL}${user.avatar}`: user?.info?.gender === "MALE" ? maleAvatar: femaleAvatar}
               alt="avatar"
               className="w-30 h-30 rounded-full object-cover border-1"
             />
@@ -83,7 +82,7 @@ export const Dashboard = () => {
               <h2 className="text-lg text-[var(--primary)] font-semibold">
                 {user?.fullName}
               </h2>
-              <p className="text-sm text-gray-600 mt-1">{user?.industry}</p>
+              <p className="text-sm text-gray-600 mt-1">{user?.info?.industry?.title}</p>
             </div>
           </div>
           <div className="text-right cursor-pointer" onClick={() => setIsEditOpen(true)}>
@@ -124,20 +123,22 @@ export const Dashboard = () => {
                   {user?.email}
                 </div>
                 <div>
-                  <PhoneIcon sx={{ color: "var(--primary)" }} /> {user?.phone}
+                  <PhoneIcon sx={{ color: "var(--primary)" }} /> {user?.info?.phone}
                 </div>
                 <div>
                   <FmdGoodOutlinedIcon sx={{ color: "var(--primary)" }} />{" "}
-                  {user?.city}
+                  {user?.info?.city}
                 </div>
                 <div>
                   <AccessTimeIcon sx={{ color: "var(--primary)" }} />{" "}
-                  {user?.scheduleType}
+                  {user?.info?.scheduleType}
                 </div>
-                <div>
-                  <StickyNote2Icon sx={{ color: "var(--primary)" }} /> Տեսնել
-                  CV-ն
-                </div>
+                <a href={user?.info?.cvUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                    <StickyNote2Icon sx={{ color: "var(--primary)", marginRight: "8px" }} />
+                    Տեսնել CV-ն
+                  </div>
+                </a>
               </div>
             </div>
           </div>
@@ -150,8 +151,8 @@ export const Dashboard = () => {
                 Նկարագրություն
               </h3>
               <div className="indent-5 mr-10">
-                {user?.info ? (
-                  <p>{user.info}</p>
+                {user?.info?.info ? (
+                  <p>{user.info?.info}</p>
                 ) : (
                   <p className="text-gray-400">Տվյալներ չկան</p>
                 )}

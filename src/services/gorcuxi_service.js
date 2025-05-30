@@ -113,6 +113,19 @@ class GorcUxiService {
       throw error;
     }
   };
+  getSimilarJobs = async (industryId) => {
+    try {
+      const response = await fetch(`${config.BACK_URL}/api/job/similar/${industryId}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Error fetching similar job by industry ${industryId}:`, error);
+      throw error;
+    }
+  };
   getIndustryById = async (id) => {
     try {
       const response = await fetch(`${config.BACK_URL}/api/industry/${id}`);

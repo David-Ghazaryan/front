@@ -8,6 +8,7 @@ import config from '../../config/public';
 import LanguageIcon from '@mui/icons-material/Language';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@mui/material';
+import SimilarJobItem from './similar-job';
 const service = new GorcUxiService(); 
 
 const JobPage = () => {
@@ -15,7 +16,8 @@ const JobPage = () => {
   const [job, setJob] = useState();
   const [company, setCompany] = useState();
   const [loading, setLoading] = useState(true);
-  // const [industryName, setIndustryName] = useState('');
+  const [similarJob, setSimilarJob] = useState([]);
+  const [similarCompany, setSimilarCompany] = useState([]);
 
   useEffect(() => {
     const fetchJobAndCompany = async () => {
@@ -23,14 +25,10 @@ const JobPage = () => {
         const jobRes = await service.getJob(jid); 
         setJob(jobRes);
         console.log(jobRes);
-
+        
         const companyRes = await service.getCompany(jobRes.companyId); 
         setCompany(companyRes);
 
-        // if (jobRes.industryId) {
-        //   const industry = await service.getIndustryById(jobRes.industryId);
-        //   setIndustryName(industry || 'Ոլորտը նշված չէ');
-        // }
       } catch (err) {
         console.error('Սխալ տվյալները բեռնելիս:', err);
       } finally {
@@ -39,7 +37,25 @@ const JobPage = () => {
     };
     fetchJobAndCompany();
   }, [jid]);
+  useEffect(() => {
+  const fetchSimilarJobs = async () => {
+    try {
+      if (!job) return;
 
+      const similarJobsRes = await service.getSimilarJobs(job.industryId);
+      setSimilarJob(similarJobsRes);
+
+      const companyIds = [...new Set(similarJobsRes.map(j => j.companyId))];
+      const companyPromises = companyIds.map(id => service.getCompany(id));
+      const companies = await Promise.all(companyPromises);
+      setSimilarCompany(companies);
+
+    } catch (err) {
+      console.error("Սխալ similar jobs բեռնելիս:", err);
+    }
+  };
+  fetchSimilarJobs()
+  },[job]);
   if (loading || !company || !job) {
     return(
       <div className='containerPage'>
@@ -114,13 +130,14 @@ const JobPage = () => {
 
   const {
     title = '',
-    industryId='',
+    industry='',
     deadline = '',
     city = '',
     scheduleType = '',
     description = '',
     level =''
   } = job;
+
   
 
 
@@ -143,7 +160,7 @@ const JobPage = () => {
 
         </div>
         <div className='grid grid-cols-2 gap-3 ml-8 mb-4'>
-          <p className='text-gray-500'>Ոլորտ՝ <span className='text-black font-bold'>{industryId}</span></p>
+          <p className='text-gray-500'>Ոլորտ՝ <span className='text-black font-bold'>{industry.title}</span></p>
           <p className='text-gray-500'>Վերջնաժամկետ՝ <span className='text-black font-bold'>{formatDate(deadline)}</span></p>
           <p className='text-gray-500'>Քաղաք՝ <span className='text-black font-bold'>{city}</span></p>
           <p className='text-gray-500'>Դրույք՝ <span className='text-black font-bold'>{scheduleTypes[scheduleType]}</span></p>
@@ -191,8 +208,29 @@ const JobPage = () => {
             <p className='indent-4 text-justify'>{company.description || 'Ընկերության մասին'}</p>
           </div>
         </div>
-        <div className='flex w-1/3 bg-[var(--itemColor)] self-start p-5 rounded-5 shadow-lg'>
+        <div className='flex flex-col w-1/3 bg-[var(--itemColor)] self-start p-5 rounded-5 shadow-lg'>
           <p className='font-bold text-xl'> Նմանատիպ աշխատանքներ </p>
+             <div className="flex items-center flex-col mt-[35px] gap-5">
+              {similarJob.map((job) => {
+                const company = similarCompany.find((c) => c.id === job.companyId);
+
+                return (
+                  <SimilarJobItem
+                    key={job.id}
+                    jobId={job.id}
+                    companyId={company?.id ?? null}
+                    logo={company?.logo ? `${config.BACK_URL}${company.logo}` : null}
+                    companyName={company?.title ?? 'Անհայտ ընկերություն'}
+                    city={job.city}
+                    title={job.title}
+                    description={job.description}
+                    scheduleType={scheduleTypes[job.scheduleType]}
+                    deadline={formatDate(job.deadline)}
+                  />
+                );
+              })}
+
+            </div>
         </div>
       </div>
     </div>
