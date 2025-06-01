@@ -5,7 +5,7 @@ import { useAuth } from "../../providers/auth";
 import { axiosInstance } from "../../axios/axios";
 import { Link } from "react-router-dom";
 export const SignInPage = () => {
-  const {status, user, setUser} = useAuth();
+  const {status, user, setUser, setStatus} = useAuth();
   const [error, setError] = useState('');
 
   const [form, setForm] = useState({
@@ -23,6 +23,7 @@ export const SignInPage = () => {
       const {data} = await axiosInstance.post('/auth/sign-in', form);
       localStorage.setItem('access-token', data.accessToken)
       setUser(data);
+      setStatus('success')
     } catch {
      setError('INVALID CREDENTIALS');
     }
