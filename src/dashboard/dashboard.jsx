@@ -11,22 +11,24 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../providers/auth";
 import axios from "axios";
 import config from "../config/public";
-import femaleAvatar from "/src/assets/images/female.png";
-import maleAvatar from "/src/assets/images/male.png";
+import femaleAvatar from "/src/assets/images/female-photo.png";
+import maleAvatar from "/src/assets/images/male-photo.png";
+import editImage from "/src/assets/images/edit-image.png";
+import { useRef } from "react";
 
 export const Dashboard = () => {
   const { user, setUser, logout } = useAuth();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("info");
-
+  const [showModal, setShowModal] = useState(false);
   const { register, handleSubmit, reset } = useForm();
 
   useEffect(() => {
     if (user) {
       reset(user); 
     }
+    console.log(user)
   }, [user, reset]);
-  console.log(user);
   const handleSave = async (data) => {
     const formData = new FormData();
     formData.append("phone", data.phone);
@@ -38,7 +40,7 @@ export const Dashboard = () => {
     }
 
     try {
-      const response = await axios.put(`${config.BACK_URL}/api/users/info`,
+      const response = await axios.patch(`${config.BACK_URL}/api/user/info`,
         formData,
         {
           headers: {
@@ -53,11 +55,68 @@ export const Dashboard = () => {
       console.error("Տեղի ունեցավ սխալ:", error);
     }
   };
+    const scheduleTypes = {
+        FULL_TIME: "Լրիվ դրույք",
+        HALF_TIME: "Կես դրույք",
+        FLEXIBLE: "Ճկուն գրաֆիկ",
+        CONTRACT: "Պայմանագրային",
+        TEMPORARY: "Ժամանակավոր/Սեզոնային",
+        INTERNSHIP: "Ինտերնշիփ",
+        REMOTE: "Հեռավար"
+    };
 
+    // const levelTypes = {
+    //     NOT_REQUIRED: "Չի պահանջվում",
+    //     BEGINNER: "Սկսնակ",
+    //     MIDDLE: "Միջին",
+    //     EXPERIENCED: "Փորձառու"
+    // };
   const handleCancel = () => {
     reset(user);
     setIsEditOpen(false);
   };
+ const fileInputRef = useRef(null);
+
+
+  const handleFileChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const avatarRes = await axios.post(`${config.BACK_URL}/api/upload`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    const newAvatarPath = avatarRes.data.filePath; 
+    setUser((prev) => ({ ...prev, avatar: newAvatarPath }));
+    try{
+      await axios.patch(`${config.BACK_URL}/api/users/${user.id}`, {
+        avatar: newAvatarPath,
+      });
+    }catch{
+        console.log('error image update in database')
+    }
+  } catch {
+    console.log('upload image error');
+  }
+
+};
+
+      const handleDeleteAvatar = async () => {
+        try {
+          await axios.patch(`${config.BACK_URL}/api/user/${user.id}/avatar`, {
+            avatar: null,
+          });
+
+          setUser((prev) => ({ ...prev, avatar: null }));
+          setShowModal(false);
+          console.log('image deleted');
+        } catch (err) {
+          console.error("Չհաջողվեց ջնջել նկարը", err);
+        }
+      };
+    
 
   return (
     <div className="my-5">
@@ -73,16 +132,77 @@ export const Dashboard = () => {
 
         <div className="bg-[var(--itemColor)] shadow p-4 rounded-lg flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <img
-              src={ user?.avatar ? `${config.BACK_URL}${user.avatar}`: user?.info?.gender === "MALE" ? maleAvatar: femaleAvatar}
-              alt="avatar"
-              className="w-30 h-30 rounded-full object-cover border-1"
-            />
-            <div>
+             <div className="flex flex-col items-center justify-center">
+                <div className="w-33 h-33 rounded-full flex items-center justify-center border-2 border-[var(--primary)]">
+                  <img
+                    src={
+                      user?.avatar
+                        ? `${config.BACK_URL}${user.avatar}`
+                        : user?.info?.gender === "male"
+                        ? maleAvatar
+                        : femaleAvatar
+                    }
+                    alt="avatar"
+                    className="w-32.5 h-32.5 rounded-full object-cover"
+                  />
+                </div>
+
+                <img
+                  className="w-19 h-19 object-contain -translate-y-[70px] translate-x-[28px] hover:cursor-pointer"
+                  src={editImage}
+                  alt="edit"
+                  onClick={() => {
+                    setShowModal(true);  
+                  }}
+
+                />
+
+                {showModal && (
+                  <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
+                      <h2 className="text-lg font-bold mb-4 text-[var(--primary)]">Նկարի կարգավորումներ</h2>
+                      <div className="flex justify-around">
+                        <>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            className="hidden"
+                          />
+                          <button
+                            onClick={() => {
+                              fileInputRef.current.click();
+                            }}
+                            className="bg-[var(--primary)] text-white px-4 py-2 rounded hover:bg-[var(--primaryDark)]"
+                          >
+                            Փոփոխել
+                          </button>
+                        </>
+                        <button
+                          onClick={handleDeleteAvatar}
+                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        >
+                          Ջնջել
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => setShowModal(false)}
+                        className="mt-4 text-sm text-gray-600 hover:underline"
+                      >
+                        Փակել
+                      </button>
+                    </div>
+                  </div>
+                )}
+                  
+
+              </div>
+            <div className="-translate-y-8">
               <h2 className="text-lg text-[var(--primary)] font-semibold">
                 {user?.fullName}
               </h2>
-              <p className="text-sm text-gray-600 mt-1">{user?.info?.industry?.title}</p>
+              <p className="text-md text-gray-600 mt-1">{user?.info?.industryName}</p>
             </div>
           </div>
           <div className="text-right cursor-pointer" onClick={() => setIsEditOpen(true)}>
@@ -103,13 +223,15 @@ export const Dashboard = () => {
           >
             Նկարագրություն
           </p>
-          <p
-            className={`cursor-pointer font-semibold ${ activeTab === "companies" ? "text-[var(--primary)]" : "" }`}
-            onClick={() => setActiveTab("companies")}
-          >
-            Ընկերություններ
-          </p>
-        </div>
+          {user?.role === "EMPLOYER" && (
+            <p
+              className={`cursor-pointer font-semibold ${ activeTab === "companies" ? "text-[var(--primary)]" : "" }`}
+              onClick={() => setActiveTab("companies")}
+            >
+              Ընկերություններ
+            </p>
+          )}
+    </div>
 
         {activeTab === "info" && (
           <div className="bg-white shadow p-4 rounded-lg flex items-center justify-between">
@@ -123,7 +245,7 @@ export const Dashboard = () => {
                   {user?.email}
                 </div>
                 <div>
-                  <PhoneIcon sx={{ color: "var(--primary)" }} /> {user?.info?.phone}
+                  <PhoneIcon sx={{ color: "var(--primary)" }} /> {user?.info?.phoneNumber }
                 </div>
                 <div>
                   <FmdGoodOutlinedIcon sx={{ color: "var(--primary)" }} />{" "}
@@ -131,11 +253,14 @@ export const Dashboard = () => {
                 </div>
                 <div>
                   <AccessTimeIcon sx={{ color: "var(--primary)" }} />{" "}
-                  {user?.info?.scheduleType}
+                  {scheduleTypes[user?.info?.scheduleType]}
                 </div>
-                <a href={user?.info?.cvUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                    <StickyNote2Icon sx={{ color: "var(--primary)", marginRight: "8px" }} />
+                <a 
+                  href={`${config.BACK_URL}${user?.user?.cvUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer" >
+                  <div className="flex items-center text-white justify-evenly rounded-xl bg-[var(--primary)] w-40 h-10 cursor-pointer">
+                    <StickyNote2Icon sx={{ color: "white", marginRight: "8px" }} />
                     Տեսնել CV-ն
                   </div>
                 </a>
@@ -163,15 +288,19 @@ export const Dashboard = () => {
             </div>
           </div>
         )}
-
-        {activeTab === "companies" && (
-          <div className="bg-white shadow p-4 rounded-lg">
-            <h3 className="font-semibold text-[var(--primary)]">
-              Ընկերություններ
-            </h3>
-            <p className="text-gray-600">Աշխատում ենք այս բաժնի վրա...</p>
-          </div>
+        {user?.role === "EMPLOYER" && (
+          <>
+            {activeTab === "companies" && (
+              <div className="bg-white shadow p-4 rounded-lg">
+                <h3 className="font-semibold text-[var(--primary)]">
+                  Ընկերություններ
+                </h3>
+                <p className="text-gray-600">Աշխատում ենք այս բաժնի վրա...</p>
+              </div>
+            )}
+          </>
         )}
+
 
         {isEditOpen && (
           <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
@@ -185,10 +314,9 @@ export const Dashboard = () => {
               <Stack spacing={2}>
                 <TextField label="Անուն Ազգանուն" fullWidth {...register("fullName")} />
                 <TextField label="Հեռախոս" fullWidth {...register("phone")} />
-                <TextField label="Ոլորտ" fullWidth {...register("industry")} />
+                <TextField label="Ոլորտ" fullWidth {...register("industryName")} />
                 <TextField label="Քաղաք" fullWidth {...register("city")} />
                 <TextField label="Աշխ․ գրաֆիկ" fullWidth {...register("scheduleType")} />
-                <input type="file" {...register("avatar")} />
               </Stack>
               <div className="flex justify-end gap-4 mt-4">
                 <button

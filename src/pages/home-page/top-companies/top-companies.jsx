@@ -29,7 +29,28 @@ const TopCompanies = () => {
 
     fetchCompanies(); 
   }, []); 
+  const [itemsToShow, setItemsToShow] = useState(3);
 
+  useEffect(() => {
+    const updateItems = () => {
+      const width = window.innerWidth;
+
+      if (width >= 1024) { 
+        setItemsToShow(8);
+      } else if (width >= 768) {
+        setItemsToShow(6);
+      } else if (width >= 640) { 
+        setItemsToShow(4);
+      } else {
+        setItemsToShow(3);
+      }
+    };
+
+    updateItems();
+
+    window.addEventListener('resize', updateItems);
+    return () => window.removeEventListener('resize', updateItems);
+  }, []);
   if (loading) {
     return (
       <div className="container">
@@ -58,28 +79,29 @@ const TopCompanies = () => {
   }
 
   return (
-    <div>
-      <div className="container">
-        <Title text={"Թոփ ընկերությունները"} />
-        <div className="grid grid-cols-4 place-items-center gap-[50px]">
-          {companies.slice(0, 8).map((company) => (
-            <CompanyItem
-              key={company.id}
-              id={company.id}
-              logo={`${config.BACK_URL}${company.logo}`}
-              companyName={company.title || "Անանուն ընկերություն"}
-              city={company.city || "Քաղաքը նշված չէ"}
-              count={company.jobs?.length || 0}
-            />
-          ))}
-        </div>
-        <div className="flex justify-center py-[20px]">
-          <p className="text-[var(--primary)] text-[20px] font-normal font-inter">
-            <Link to="/companies">Տեսնել ավելին →</Link>
-          </p>
-        </div>
-      </div>
+   <div>
+  <div className="container">
+    <Title text={"Թոփ ընկերությունները"} />
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 place-items-center gap-6 md:gap-5 lg:gap-10">
+      {companies.slice(0, itemsToShow).map((company) => (
+        <CompanyItem
+          key={company.id}
+          id={company.id}
+          logo={`${config.BACK_URL}${company.logo}`}
+          companyName={company.title || "Անանուն ընկերություն"}
+          city={company.city || "Քաղաքը նշված չէ"}
+          count={company.jobs?.length || 0}
+        />
+      ))}
     </div>
+    <div className="flex justify-center py-[20px]">
+      <p className="text-[var(--primary)] text-[20px] font-normal font-inter">
+        <Link to="/companies">Տեսնել ավելին →</Link>
+      </p>
+    </div>
+  </div>
+</div>
   );
 };
 

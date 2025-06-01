@@ -21,6 +21,7 @@ import { VerifyEmailPage } from "./pages/verify-email/verfiy-email";
 import { SentEmailPage } from "./pages/sent-email/sent-email";
 import ProtectedRoute from "./components/protected-route";
 import { Dashboard } from "./dashboard/dashboard";
+import SingleWorker from "./components/single-wroker/single-worker";
 
 function App() {
   
@@ -45,6 +46,8 @@ function App() {
             <Route path="/sign-in" element={<SignInPage />} />
             <Route path="/verify-email" element={<VerifyEmailPage/>} />
             <Route path="/sent-email" element={<SentEmailPage/>} />
+            {/* <Route path="/single-worker" element={<SingleWorker/>} /> */}
+            <Route path="/user/:id" element={<SingleWorker/>} />
 
             <Route path="" element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />

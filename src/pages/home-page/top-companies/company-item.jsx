@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 const CompanyItem = ({id,companyName,logo, city, count }) => {
      return (
-        <div className="w-[270px] h-[270px] bg-[var(--itemColor)] rounded-[12px]  hover:shadow-[inset_0_0_0_2px_var(--primary)] shadow-lg relative flex flex-col items-center justify-between py-6 cursor-pointer">
+        <div className="w-[250px] h-[250px] bg-[var(--itemColor)] rounded-[12px]  hover:shadow-[inset_0_0_0_2px_var(--primary)] shadow-lg relative flex flex-col items-center justify-between py-6 cursor-pointer">
             <div className="absolute top-3 right-3 bg-[var(--light)] mb-[50px] px-3 py-1 rounded-[10px] text-[var(--primary)] text-sm font-medium hover:bg-[var(--primary)] hover:text-[var(--light)] transition duration-300">
                 {count} աշխատանք
             </div>

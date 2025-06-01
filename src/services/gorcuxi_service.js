@@ -99,7 +99,53 @@ class GorcUxiService {
       throw error;
     }
   };
+  getAllUser = async ({
+    page = 1,
+    limit = 6,
+    nameQ = '',
+    industryName = '',
+    city = '',
+    gender = '',
+    scheduleType = '',
+    hasSalary = false,
+    level = '',
+  } = {}) => {
+    try {
+      const query = new URLSearchParams({
+        page,
+        limit,
+        nameQ,
+        industryName,
+        city,
+        gender,
+        scheduleType,
+        hasSalary,
+        level,
+      });
+      const response = await fetch(`${config.BACK_URL}/api/user?${query.toString()}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching all users:', error);
+      throw error;
+    }
+  };
 
+  getUser = async (id) => {
+    try {
+      const response = await fetch(`${config.BACK_URL}/api/user/${id}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Error fetching user by ID ${id}:`, error);
+      throw error;
+    }
+  };
   getJob = async (id) => {
     try {
       const response = await fetch(`${config.BACK_URL}/api/job/${id}`);

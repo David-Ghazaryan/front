@@ -28,7 +28,7 @@ const OnTop = () => {
   return (
     <div
       onClick={handleClick}
-      className={`w-12 h-12 rounded-full flex items-center justify-center fixed bottom-10 right-2 cursor-pointer transition-all duration-300
+      className={` z-100 w-12 h-12 rounded-full flex items-center justify-center fixed bottom-10 right-2 cursor-pointer transition-all duration-300
         ${showButton ? 'opacity-100' : 'opacity-0 pointer-events-none'} 
         ${isNearBottom ? 'bg-[var(--light)]' : 'bg-[var(--primary)]'}`
       }
