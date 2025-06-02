@@ -121,7 +121,7 @@ const Jobs = () => {
 
         setJobs(data);
         setRandomJobs(randomData)
-        setTotalPages(pagination.totalPages)
+        setTotalPages(pagination.total)
       } catch {
         setError('Չհաջողվեց բեռնել տվյալները');
       } finally {

@@ -4,8 +4,9 @@ import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutl
 import ReviewCard from "./review-item";
 import Alert from "@mui/material/Alert";
 import CheckIcon from "@mui/icons-material/Check";
-
-import { useState } from "react";
+import femaleAvatar from "/src/assets/images/female-photo.png";
+import maleAvatar from "/src/assets/images/male-photo.png";
+import { useEffect, useState } from "react";
 import {
   Modal,
   Box,
@@ -14,6 +15,8 @@ import {
   Typography,
   Rating,
 } from "@mui/material";
+import { axiosInstance } from "../../../axios/axios";
+import config from "../../../config/public";
 
 const modalStyle = {
   position: "absolute",
@@ -34,6 +37,7 @@ const AppReviews = ({ result }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertType, setAlertType] = useState("info");
   const [alertMessage, setAlertMessage] = useState("");
+  const [data, setData] = useState([]);
 
   let colorClass = "text-black";
 
@@ -47,7 +51,16 @@ const AppReviews = ({ result }) => {
     colorClass = "text-green-600";
   }
 
-  const handleSubmit = () => {
+  const fetchData = async () => {
+    const {data} = await axiosInstance.get('/review');
+    setData(data)
+  }
+
+  useEffect(() => {
+fetchData()
+  }, [])
+
+  const handleSubmit = async () => {
     if (review.trim() === "" || rating === 0) {
       setAlertType("info");
       setAlertMessage("Խնդրում ենք լրացնել գնահատականը և կարծիքը։");
@@ -58,7 +71,8 @@ const AppReviews = ({ result }) => {
       return;
     }
 
-    console.log("Submitted review:", review, "Rating:", rating);
+    await axiosInstance.post('/review', {text: review.trim(), start: rating});
+    await fetchData()
     setReview("");
     setRating(0);
     setOpen(false);
@@ -176,13 +190,16 @@ const AppReviews = ({ result }) => {
         </Modal>
 
         <div className="grid grid-cols-4 gap-[50px] mt-[50px]">
-          <ReviewCard image={"src/assets/images/user-image.png"} rating={4} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} rating={3} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} rating={5} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} rating={5} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} rating={5} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} rating={5} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
-          <ReviewCard image={"src/assets/images/user-image.png"} rating={5} name={"David"} surname={"Ghazaryan"} date={"3 months ago"} review={"So good website"} />
+          {data.map(item => {
+            return <ReviewCard key={item.id} image={
+                    item.user?.avatar
+                      ? `${config.BACK_URL}${item.user.avatar}`
+                      : item.user?.info?.gender === "male"
+                        ? maleAvatar
+                        : femaleAvatar
+                  } 
+                  rating={item.stars} name={item.user.name} surname={item.user.surname} date={item.createdAt} review={item.text} />
+          })}
         </div>
       </div>
     </div>
