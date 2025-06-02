@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
@@ -49,80 +49,87 @@ const levelTypes = {
 };
 const service = new GorcUxiService();
 
+export function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 const Jobs = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get('q') || '';
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
+
   const [inputValue, setInputValue] = useState(searchQuery);
-  const [placeholder, setPlaceholder] = useState('');
+  const debouncedSearch = useDebounce(inputValue, 500);
   const [jobs, setJobs] = useState([]);
+  const [randomJobs, setRandomJobs] = useState([]);
   const [industryData, setIndustryData] = useState([]);
-  const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedLevels, setSelectedLevels] = useState([]);
   const [selectedIndustries, setSelectedIndustries] = useState([]);
   const [selectedSalary, setSelectedSalary] = useState(false);
   const [isForStudents, setIsForStudents] = useState(false);
-  const [selectedCities, setSelectedCities] = useState(() => {
-    const citiesFromURL = searchParams.getAll('city');
-    return citiesFromURL.length ? citiesFromURL : [];
-  });
-  const [selectedSchedule, setSelectedSchedule] = useState(() => {
-    const scheduleFromURL = searchParams.get('schedule');
-    return scheduleFromURL || '';
-  });
-  const jobsPerPage = 5;
+  const [selectedCities, setSelectedCities] = useState([]);
+  const [selectedSchedule, setSelectedSchedule] = useState();
+  const [totalPages, setTotalPages] = useState(0);
+
+  useEffect(() => {
+       (async () => {
+         const industry = await service.getAllIndusty();
+        setIndustryData(industry);
+       })()
+      }, [])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [jobData, companyData] = await Promise.all([service.getAllJobs(), service.getCompanies()]);
-        setJobs(jobData);
-        setCompanies(companyData);
-        const industry = await service.getAllIndusty();
-        setIndustryData(industry);
-        console.log("industry", JSON.stringify(industry, null, 2));
+        const {data, pagination} = await service.getAllJobs({
+          q: debouncedSearch,
+          page: currentPage,
+          limit: 5,
+          levels: selectedLevels,
+          industryIds: selectedIndustries,
+          selectedSalary: selectedSalary,
+          allowStudents: isForStudents,
+          cities: selectedCities,
+          scheduleTypes: selectedSchedule
+        });
 
-      } catch (err) {
+        const {data: randomData} = await service.getAllJobs({
+          q: debouncedSearch,
+          page: currentPage,
+          limit: 5,
+          levels: selectedLevels,
+          industryIds: selectedIndustries,
+          selectedSalary: selectedSalary,
+          allowStudents: isForStudents,
+          cities: selectedCities,
+          scheduleTypes: selectedSchedule
+        });
+
+
+        setJobs(data);
+        setRandomJobs(randomData)
+        setTotalPages(pagination.totalPages)
+      } catch {
         setError('Չհաջողվեց բեռնել տվյալները');
-        console.error(err);
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, []);
-  useEffect(() => {
-    const citiesFromURL = searchParams.getAll('city');
-    setSelectedCities(citiesFromURL);
-
-    const scheduleFromURL = searchParams.get('schedule');
-    setSelectedSchedule(scheduleFromURL || '');
-
-    const levelsFromURL = searchParams.getAll('level');
-    setSelectedLevels(levelsFromURL);
-  }, [searchParams]);
-
-  useEffect(() => {
-    const text = 'Փնտրեք աշխատանք այստեղ...';
-    let index = 0;
-
-    const interval = setInterval(() => {
-      setPlaceholder((prev) => {
-        if (index > text.length) {
-          clearInterval(interval);
-          return prev;
-        }
-        const next = text.slice(0, index);
-        index++;
-        return next;
-      });
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []);
+  }, [debouncedSearch, currentPage, selectedLevels, selectedIndustries, selectedSalary, isForStudents, selectedCities, selectedSchedule]);
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -201,29 +208,6 @@ const handleToggle = (city) => {
   setSearchParams(newParams);
 };
 
-const filteredJobs = useMemo(() => {
-  return jobs.filter((job) => {
-    const jobTitleMatch = job.title?.toLowerCase().includes(searchQuery.toLowerCase());
-    const company = companies.find((c) => c.id === job.companyId);
-    const companyNameMatch = company?.title?.toLowerCase().includes(searchQuery.toLowerCase());
-    const cityMatch = selectedCities.length === 0 || selectedCities.includes(job.city);
-    const scheduleMatch = !selectedSchedule || job.scheduleType === selectedSchedule;
-    const levelMatch = 
-      selectedLevels.length === 0 ||
-      selectedLevels.some((level) => 
-        Object.keys(levelTypes).find((key) => key === job.level) === level
-      );
-
-    const salaryMatch = !selectedSalary || !!job.salary;
-    const studentMatch = !isForStudents || job.isForStudents;
-    return (jobTitleMatch || companyNameMatch) && cityMatch && scheduleMatch && levelMatch && salaryMatch && studentMatch;
-  });
-}, [jobs, companies, searchQuery, selectedCities, selectedSchedule, selectedLevels, selectedSalary, isForStudents]);
-
-  const indexOfLastJob = currentPage * jobsPerPage;
-  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
-
   const scheduleTypes = {
     FULL_TIME: 'Լրիվ դրույք',
     HALF_TIME: 'Կես դրույք',
@@ -254,7 +238,6 @@ const filteredJobs = useMemo(() => {
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-console.log(jobs);
 
  if (loading) {
     return (
@@ -309,8 +292,6 @@ console.log(jobs);
   }
 
   if (error) return <p className="text-red-500 text-center mt-10">{error}</p>;
-
-  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
 
   return (
     <>
@@ -611,7 +592,6 @@ console.log(jobs);
                 <input
                   type="text"
                   className="w-[450px] h-[50px] rounded-[8px] px-4 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition duration-300 input-animate"
-                  placeholder={placeholder}
                   value={inputValue}
                   onChange={handleInputChange}
                 />
@@ -624,16 +604,15 @@ console.log(jobs);
               </form>
 
               <div className="flex flex-col">
-                {currentJobs.map((job) => {
-                  const jobCompany = companies.find((c) => c.id === job.companyId);
+                {randomJobs.map((job) => {
                   return (
                     <Job
                       key={job.id}
                       job={job.id}
                       jobId={job.id}
-                      companyId={jobCompany?.id}
-                      companyName={jobCompany?.title}
-                      logo={jobCompany?.logo ? `${config.BACK_URL}${jobCompany.logo}` : null}
+                      companyId={job.companyId}
+                      companyName={job.company.title}
+                      logo={job.company.logo ? `${config.BACK_URL}${job.companylogo}` : null}
                       city={job.city}
                       title={job.title}
                       deadline={formatDate(job.deadline)}
@@ -673,14 +652,13 @@ console.log(jobs);
             <p className="font-bold font-inter text-center text-[20px] text-[var(--primary)] pt-5">Թոփ աշխատանքներ</p>
             <div className="flex flex-col mt-[35px] gap-5">
               {jobs.map((job) => {
-                const jobCompany = companies.find((c) => c.id === job.companyId);
                 return (
                   <TopJob
                     key={job.id}
                     jobId={job.id}
-                    companyId={jobCompany.id}
-                    logo={jobCompany?.logo ? `${config.BACK_URL}${jobCompany.logo}` : null}
-                    companyName={jobCompany?.title}
+                    companyId={job.company.id}
+                    logo={job.company.logo ? `${config.BACK_URL}${job.company.logo}` : null}
+                    companyName={job.company.title}
                     city={job.city}
                     title={job.title}
                     description={job.description}
