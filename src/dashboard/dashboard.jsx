@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Stack, TextField } from "@mui/material";
@@ -15,39 +16,56 @@ import femaleAvatar from "/src/assets/images/female-photo.png";
 import maleAvatar from "/src/assets/images/male-photo.png";
 import editImage from "/src/assets/images/edit-image.png";
 import { useRef } from "react";
+import { axiosInstance } from "../axios/axios";
 
 export const Dashboard = () => {
   const { user, setUser, logout } = useAuth();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("info");
   const [showModal, setShowModal] = useState(false);
+  const [info, setInfo] = useState(null);
   const { register, handleSubmit, reset } = useForm();
 
   useEffect(() => {
-    if (user) {
-      reset(user); 
+   if(user) {
+     reset({
+      fullName: user.fullName,
+      phoneNumber: user.info.phoneNumber,
+      city: user.info.city,
+      industryName: user.info.industryName,
+      scheduleType: user.info.scheduleType
+    })
+    setInfo(user.info.info ?? "")
+   }
+  }, [user])
+
+  const handleSave = async (data, isChangingOnlyInfo) => {
+    const body = {}
+
+    if(isChangingOnlyInfo) {
+    body["info"] = info;
+    } else {
+    body["info"] = data.info;
     }
-    console.log(user)
-  }, [user, reset]);
-  const handleSave = async (data) => {
-    const formData = new FormData();
-    formData.append("phone", data.phone);
-    formData.append("industry", data.industry);
-    formData.append("city", data.city);
-    formData.append("scheduleType", data.scheduleType);
-    if (data.avatar?.[0]) {
-      formData.append("avatar", data.avatar[0]);
-    }
+      body["avatar"] = user.avatar;
+            body["phoneNumber"] = data.phoneNumber;
+      body["fullName"] = data.fullName;
+      body["gender"] = data.gender;
+    body["cvUrl"] = data.cvUrl;
+    body["city"] = data.city;
+    body["scheduleType"] = data.scheduleType;
+    body["salary"] = data.salary;
+    body["industryId"] = data.industryId;
+    body["industryName"] = data.industryName;
+    body["level"] = data.level;
+    // if (data.avatar?.[0]) {
+    //   formData.append("avatar", data.avatar[0]);
+    // }
 
     try {
-      const response = await axios.patch(`${config.BACK_URL}/api/user/info`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+      const response = await axiosInstance.put(`/user/info`,body
       );
+
 
       setUser(response.data);
       setIsEditOpen(false);
@@ -72,7 +90,13 @@ export const Dashboard = () => {
     //     EXPERIENCED: "Փորձառու"
     // };
   const handleCancel = () => {
-    reset(user);
+    reset({
+      fullName: user.fullName,
+      phoneNumber: user.info.phoneNumber,
+      city: user.info.city,
+      industryName: user.info.industryName,
+      scheduleType: user.info.scheduleType
+    })
     setIsEditOpen(false);
   };
  const fileInputRef = useRef(null);
@@ -90,13 +114,7 @@ export const Dashboard = () => {
     });
     const newAvatarPath = avatarRes.data.filePath; 
     setUser((prev) => ({ ...prev, avatar: newAvatarPath }));
-    try{
-      await axios.patch(`${config.BACK_URL}/api/users/${user.id}`, {
-        avatar: newAvatarPath,
-      });
-    }catch{
-        console.log('error image update in database')
-    }
+       axiosInstance.put('/user/avatar', {url: newAvatarPath})
   } catch {
     console.log('upload image error');
   }
@@ -105,8 +123,8 @@ export const Dashboard = () => {
 
       const handleDeleteAvatar = async () => {
         try {
-          await axios.patch(`${config.BACK_URL}/api/user/${user.id}/avatar`, {
-            avatar: null,
+          await axiosInstance.put(`/user/avatar`, {
+            url: null,
           });
 
           setUser((prev) => ({ ...prev, avatar: null }));
@@ -305,7 +323,7 @@ export const Dashboard = () => {
         {isEditOpen && (
           <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
             <form
-              onSubmit={handleSubmit(handleSave)}
+              onSubmit={handleSubmit((data) => handleSave(data))}
               className="bg-white p-6 rounded-lg shadow-md w-[90%] max-w-md space-y-4"
             >
               <h2 className="text-xl font-semibold text-[var(--primary)]">
@@ -313,7 +331,71 @@ export const Dashboard = () => {
               </h2>
               <Stack spacing={2}>
                 <TextField label="Անուն Ազգանուն" fullWidth {...register("fullName")} />
-                <TextField label="Հեռախոս" fullWidth {...register("phone")} />
+                <TextField label="Հեռախոս" fullWidth {...register("phoneNumber")} />
+                <TextField label="Ոլորտ" fullWidth {...register("industryName")} />
+                <TextField label="Քաղաք" fullWidth {...register("city")} />
+                <TextField label="Աշխ․ գրաֆիկ" fullWidth {...register("scheduleType")} />
+              </Stack>
+              <div className="flex justify-end gap-4 mt-4">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="cursor-pointer px-4 py-2 rounded bg-gray-300"
+                >
+                  Չեղարկել
+                </button>
+                <button
+                  type="submit"
+                  className="cursor-pointer px-4 py-2 rounded bg-[var(--primary)] text-white"
+                >
+                  OK
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+        {/* {isInfoEditOpen && (
+          <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+            <form
+              onSubmit={handleSubmit((data) => handleSave(data, true))}
+              className="bg-white p-6 rounded-lg shadow-md w-[90%] max-w-md space-y-4"
+            >
+              <h2 className="text-xl font-semibold text-[var(--primary)]">
+                Խմբագրել տվյալները
+              </h2>
+              <Stack spacing={2}>
+                <TextField label="Անուն Ազգանուն" fullWidth {...register("info")} />
+              </Stack>
+              <div className="flex justify-end gap-4 mt-4">
+                <button
+                  type="button" 
+                  onClick={handleCancel}
+                  className="cursor-pointer px-4 py-2 rounded bg-gray-300"
+                >
+                  Չեղարկել
+                </button>
+                <button
+                  type="submit"
+                  className="cursor-pointer px-4 py-2 rounded bg-[var(--primary)] text-white"
+                >
+                  OK
+                </button>
+              </div>
+            </form>
+          </div>
+        )} */}
+        {isEditOpen && (
+          <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+            <form
+              onSubmit={handleSubmit((data) => handleSave(data))}
+              className="bg-white p-6 rounded-lg shadow-md w-[90%] max-w-md space-y-4"
+            >
+              <h2 className="text-xl font-semibold text-[var(--primary)]">
+                Խմբագրել տվյալները
+              </h2>
+              <Stack spacing={2}>
+                <TextField label="Անուն Ազգանուն" fullWidth {...register("fullName")} />
+                <TextField label="Հեռախոս" fullWidth {...register("phoneNumber")} />
                 <TextField label="Ոլորտ" fullWidth {...register("industryName")} />
                 <TextField label="Քաղաք" fullWidth {...register("city")} />
                 <TextField label="Աշխ․ գրաֆիկ" fullWidth {...register("scheduleType")} />

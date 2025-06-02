@@ -7,9 +7,9 @@ import { Link } from "react-router-dom";
 const Job = ({logo,jobId,companyId,companyName,city,title,deadline,salary,scheduleType}) => {
      return (
     <div className="w-full min-h-[100px] bg-[var(--itemColor)]   rounded-[5px] shadow-lg mt-5">
-        <div className='flex p-3'>
-            <div className='w-[80px] h-[80px] mr-2'>
-                <img src={logo} alt={companyName} />
+        <div className='flex p-3 '>
+            <div className='w-[80px] h-[80px] mr-2 flex items-center justify-center'>
+                <img className='  object-contain' src={logo} alt={companyName} />
             </div>
             <div className='flex flex-col '>
                 <Link to={`/job/${jobId}`}>

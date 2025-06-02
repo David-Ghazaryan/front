@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../../providers/auth";
 import { axiosInstance } from "../../axios/axios";
 import { Link } from "react-router-dom";
+import CircularProgress from '@mui/material/CircularProgress';
 export const SignInPage = () => {
   const {status, user, setUser, setStatus} = useAuth();
   const [error, setError] = useState('');
@@ -25,7 +26,7 @@ export const SignInPage = () => {
       setUser(data);
       setStatus('success')
     } catch {
-     setError('INVALID CREDENTIALS');
+     setError('Նման տվյալ չկա');
     }
   };
 
@@ -39,7 +40,11 @@ export const SignInPage = () => {
   };
 
   if(status === 'loading') {
-    return <p>Loading...</p>
+    return (
+      <div className="min-h-screen flex items-center justify-center py-10 text-lg">
+        <CircularProgress sx={{ color: '#0f687e' }} />
+      </div>
+    );
   }
 
   if(user) {

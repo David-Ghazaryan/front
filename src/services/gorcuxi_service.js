@@ -33,6 +33,19 @@ class GorcUxiService {
       throw error;
     }
   };
+  getAllReview = async () => {
+    try {
+      const response = await fetch(`${config.BACK_URL}/api/review`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching all reviews:', error);
+      throw error;
+    }
+  };
 
   getCompany = async (id) => {
     try {

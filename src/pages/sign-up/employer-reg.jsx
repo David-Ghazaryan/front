@@ -107,7 +107,7 @@ const EmployerRegistration = () => {
               <MenuItem value="female">Իգական</MenuItem>
             </TextField>
 
-{error && <p className="text-red-500">{error}</p>}
+            {error && <p className="text-red-500">{error}</p>}
             <div className="mt-4">
               <Button
                 fullWidth
