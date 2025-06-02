@@ -148,8 +148,8 @@ const JobPage = () => {
           <img className='w-full h-full object-cover' src={`${config.BACK_URL}${company.backgroundImage}`} alt={company.title} />
         </div>
         <div className='w-full h-[125px] flex pl-[30px]'>
-          <div className='w-[150px] h-[150px]  border-2 border-gray-200 transform translate-y-[-60px] z-20 bg-[var(--primary)]'>
-            <img className='w-full h-full' src={`${config.BACK_URL}${company.logo}`} alt={company.title || 'Անուն'} />
+          <div className='w-[150px] h-[150px]  border-2 border-gray-200 transform translate-y-[-60px] z-20 bg-white'>
+            <img className='w-full h-full object-contain' src={`${config.BACK_URL}${company.logo}`} alt={company.title || 'Անուն'} />
           </div>
           <div className='mt-4 ml-10 flex flex-col'>
             <p className='font-bold text-3xl'>{title || 'Աշխատանքի անունը'}</p>

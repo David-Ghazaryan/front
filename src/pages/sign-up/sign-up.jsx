@@ -1,11 +1,15 @@
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../../providers/auth";
-
+import CircularProgress from '@mui/material/CircularProgress';
 const RegisterPage = () => {
   const {status, user} = useAuth();
 
    if(status === 'loading') {
-    return <p>Loading...</p>
+    return (
+          <div className="min-h-screen flex items-center justify-center py-10 text-lg">
+            <CircularProgress sx={{ color: '#0f687e' }} />
+          </div>
+        );
   }
 
   if(user) {
