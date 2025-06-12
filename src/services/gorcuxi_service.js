@@ -86,14 +86,35 @@ class GorcUxiService {
       throw error;
     }
   };
-  getAllJobs = async () => {
+  getAllJobs = async ({
+    q,
+    page,
+    limit,
+    levels,
+    industryIds,
+    selectedSalary,
+    cities,
+    allowStudents,
+    scheduleTypes,
+  }) => {
     try {
-      const response = await fetch(`${config.BACK_URL}/api/job`);
+      const queryParams = new URLSearchParams({
+        q,
+        page,
+        limit,
+        levels,
+        industryIds,
+        selectedSalary,
+        cities,
+        allowStudents,
+        scheduleTypes,
+      });
+      const response = await fetch(`${config.BACK_URL}/api/job?${queryParams.toString()}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      return data.data;
+      return data;
     } catch (error) {
       console.error('Error fetching all jobs:', error);
       throw error;

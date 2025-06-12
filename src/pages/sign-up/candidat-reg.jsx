@@ -4,6 +4,7 @@ import { useAuth } from "../../providers/auth";
 import { axiosInstance } from "../../axios/axios";
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
+import { useState } from "react";
 
 const CandidatRegistration = () => {
    const navigate = useNavigate();

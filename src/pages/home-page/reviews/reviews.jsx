@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { axiosInstance } from "../../../axios/axios";
 import config from "../../../config/public";
+import dayjs from "dayjs";
 
 const modalStyle = {
   position: "absolute",
@@ -38,7 +39,7 @@ const AppReviews = ({ result }) => {
   const [alertType, setAlertType] = useState("info");
   const [alertMessage, setAlertMessage] = useState("");
   const [data, setData] = useState([]);
-
+const [error,setError] = useState('');
   let colorClass = "text-black";
 
   if (result >= 0 && result < 2) {
@@ -71,18 +72,30 @@ fetchData()
       return;
     }
 
-    await axiosInstance.post('/review', {text: review.trim(), start: rating});
-    await fetchData()
-    setReview("");
-    setRating(0);
-    setOpen(false);
-
-    setAlertType("success");
-    setAlertMessage("Ձեր կարծիքը հաջողությամբ ուղարկվեց:");
-    setShowAlert(true);
+  try {
+      await axiosInstance.post('/review', {text: review.trim(), stars: rating});
+      await fetchData()
+      setReview("");
+      setRating(0);
+      setOpen(false);
+  
+      setAlertType("success");
+      setAlertMessage("Ձեր կարծիքը հաջողությամբ ուղարկվեց:");
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
+  } catch (err) {
+    console.log(err);
+    setError('Դուք գրանցված չեք');
     setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
+      
+      setReview("");
+      setRating(0);
+      setOpen(false);
+      setError('')
+    }, 2000);
+  }
   };
 
   return (
@@ -158,6 +171,9 @@ fetchData()
                 },
               }}
             />
+            {error &&
+            <p className="text-red-500">{error}</p>
+            }
             <Box mt={2} display="flex" justifyContent="space-between">
               <Button
                 variant="outlined"
@@ -198,7 +214,7 @@ fetchData()
                         ? maleAvatar
                         : femaleAvatar
                   } 
-                  rating={item.stars} name={item.user.name} surname={item.user.surname} date={item.createdAt} review={item.text} />
+                  rating={item.stars} fullName={item.user.fullName} date={dayjs(item.createdAt).format('DD.MM.YYYY')} review={item.text} />
           })}
         </div>
       </div>

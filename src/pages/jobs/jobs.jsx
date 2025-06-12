@@ -121,8 +121,9 @@ const Jobs = () => {
 
         setJobs(data);
         setRandomJobs(randomData)
-        setTotalPages(pagination.total)
-      } catch {
+        setTotalPages(pagination.totalPages)
+      } catch (error) {
+        console.log(error)
         setError('Չհաջողվեց բեռնել տվյալները');
       } finally {
         setLoading(false);
@@ -612,7 +613,7 @@ const handleToggle = (city) => {
                       jobId={job.id}
                       companyId={job.companyId}
                       companyName={job.company.title}
-                      logo={job.company.logo ? `${config.BACK_URL}${job.companylogo}` : null}
+                      logo={job.company.logo ? `${config.BACK_URL}${job.company.logo}` : null}
                       city={job.city}
                       title={job.title}
                       deadline={formatDate(job.deadline)}
